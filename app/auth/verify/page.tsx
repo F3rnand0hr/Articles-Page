@@ -1,0 +1,148 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
+
+type VerificationType = 'signup' | 'recovery' | 'email' | null
+
+export default function VerifyPage() {
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
+  const [message, setMessage] = useState<string>('Verificando tu correo...')
+  const [isResending, setIsResending] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const token = searchParams.get('token')
+  const type = searchParams.get('type') as VerificationType
+  const email = searchParams.get('email')
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      if (!token) {
+        setStatus('error')
+        setMessage('No se proporcionó un token de verificación.')
+        return
+      }
+
+      const supabase = createClient()
+
+      try {
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: token,
+          type: type || 'email',
+          email: email || undefined
+        })
+
+        if (error) throw error
+
+        setStatus('success')
+        setMessage('¡Correo verificado con éxito! Redirigiendo...')
+
+        // Redirect based on verification type
+        setTimeout(() => {
+          if (type === 'recovery') {
+            router.push('/auth/update-password')
+          } else {
+            router.push('/articulos')
+          }
+        }, 2000)
+
+      } catch (error) {
+        console.error('Error during verification:', error)
+        setStatus('error')
+        setMessage('El enlace de verificación no es válido o ha expirado.')
+      }
+    }
+
+    verifyToken()
+  }, [token, type, email, router])
+
+  const handleResend = async () => {
+    setIsResending(true);
+    if (!email) {
+      setMessage('No se puede reenviar el correo sin una dirección de correo electrónico.')
+      return
+    }
+
+    setStatus('loading')
+    setMessage('Enviando correo de verificación...')
+
+    const supabase = createClient()
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup', // Using 'signup' as the default type since 'recovery' is not a valid type
+        email,
+      })
+
+      if (error) throw error
+
+      setStatus('success')
+      setMessage('¡Correo de verificación reenviado! Por favor revisa tu bandeja de entrada.')
+    } catch (error) {
+      console.error('Error resending verification:', error)
+      setStatus('error')
+      setMessage('Error al reenviar el correo. Por favor intenta nuevamente.')
+    }
+    setIsResending(false);
+  }
+
+  const renderContent = () => {
+    switch (status) {
+      case 'loading':
+        return (
+          <div className="text-center space-y-4">
+            <Loader2 className="h-12 w-12 text-blue-500 animate-spin mx-auto" />
+            <p className="text-lg text-gray-200">{message}</p>
+          </div>
+        )
+      case 'success':
+        return (
+          <div className="text-center space-y-4">
+            <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
+            <h2 className="text-2xl font-bold text-white">¡Verificación exitosa!</h2>
+            <p className="text-gray-300">{message}</p>
+          </div>
+        )
+      case 'error':
+        return (
+          <div className="text-center space-y-6">
+            <div className="space-y-2">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
+              <h2 className="text-2xl font-bold text-white">Error de verificación</h2>
+              <p className="text-gray-300">{message}</p>
+            </div>
+
+            {email && (
+              <Button
+                onClick={handleResend}
+                disabled={isResending}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isResending ? 'Enviando...' : 'Reenviar correo'}
+              </Button>
+            )}
+
+            <Button
+              variant="outline"
+              onClick={() => router.push('/')}
+              className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+            >
+              Volver al inicio
+            </Button>
+          </div>
+        )
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-8 shadow-xl">
+        {renderContent()}
+      </div>
+    </div>
+  )
+}
