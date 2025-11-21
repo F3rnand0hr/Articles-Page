@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server"
-import { SupabaseClient } from "@supabase/supabase-js"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -31,7 +30,7 @@ interface Article {
 }
 
 export default async function ArticulosPage() {
-  const supabase: SupabaseClient = await createClient()
+  const supabase = await createClient()
 
   type ArticleResponse = {
     id: string

@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { createClient } from "@/lib/supabase/client"
+import { colors, colorCombos, theme } from "@/lib/colors"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -70,15 +71,15 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 p-4">
-      <Card className="w-full max-w-md border-slate-700 bg-slate-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-gray-50 to-white p-4">
+      <Card className={`w-full max-w-md ${theme.light.border} ${theme.light.card}`}>
         <CardHeader>
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <Scale className="h-8 w-8 text-red-500" />
-            <span className="text-2xl font-bold text-white">Derecho en Perspectiva</span>
+            <Scale className={`h-8 w-8 ${colors.primary.text[500]}`} />
+            <span className={`text-2xl font-bold ${theme.light.foreground}`}>Derecho en Perspectiva</span>
           </div>
-          <CardTitle className="text-2xl text-white text-center">Crear Cuenta</CardTitle>
-          <CardDescription className="text-slate-400 text-center">
+          <CardTitle className={`text-2xl ${theme.light.foreground} text-center`}>Crear Cuenta</CardTitle>
+          <CardDescription className={`${colorCombos.mutedText} text-center`}>
             Únete a nuestra comunidad legal y participa en las discusiones
           </CardDescription>
         </CardHeader>
@@ -86,13 +87,13 @@ export default function SignUpPage() {
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               {error && (
-                <div className="p-3 bg-red-900/50 border border-red-700 text-red-200 text-sm rounded-md">
+                <div className="p-3 bg-red-50 border border-red-200 text-red-800 text-sm rounded-md">
                   {error}
                 </div>
               )}
 
               <div className="grid gap-2">
-                <Label htmlFor="displayName" className="text-white">
+                <Label htmlFor="displayName" className={theme.light.foreground}>
                   Nombre de Usuario
                 </Label>
                 <Input
@@ -101,7 +102,7 @@ export default function SignUpPage() {
                   placeholder="Tu nombre"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-red-500 focus:ring-red-500"
+                  className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                   minLength={3}
                   maxLength={50}
@@ -109,7 +110,7 @@ export default function SignUpPage() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-white">
+                <Label htmlFor="email" className={theme.light.foreground}>
                   Correo Electrónico
                 </Label>
                 <Input
@@ -118,13 +119,13 @@ export default function SignUpPage() {
                   placeholder="tucorreo@ejemplo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-red-500 focus:ring-red-500"
+                  className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="password" className="text-white">
+                <Label htmlFor="password" className={theme.light.foreground}>
                   Contraseña
                 </Label>
                 <Input
@@ -133,14 +134,14 @@ export default function SignUpPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-red-500 focus:ring-red-500"
+                  className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                   minLength={6}
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="confirmPassword" className="text-white">
+                <Label htmlFor="confirmPassword" className={theme.light.foreground}>
                   Confirmar Contraseña
                 </Label>
                 <Input
@@ -149,7 +150,7 @@ export default function SignUpPage() {
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400 focus:border-red-500 focus:ring-red-500"
+                  className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                   minLength={6}
                 />
@@ -157,15 +158,15 @@ export default function SignUpPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+                className={`w-full ${colorCombos.primaryButton} font-medium py-2 px-4 rounded-md transition-colors`}
                 disabled={isLoading}
               >
                 {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
               </Button>
 
-              <p className="text-center text-sm text-slate-400">
+              <p className={`text-center text-sm ${colorCombos.mutedText}`}>
                 ¿Ya tienes una cuenta?{' '}
-                <Link href="/auth/sign-in" className="text-red-400 hover:underline">
+                <Link href="/auth/sign-in" className={`${colors.primary.text[600]} hover:underline`}>
                   Iniciar Sesión
                 </Link>
               </p>

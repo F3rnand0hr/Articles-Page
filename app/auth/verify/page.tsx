@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
+import { colors, colorCombos, theme } from "@/lib/colors"
 import { Button } from "@/components/ui/button"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 
@@ -95,32 +96,32 @@ export default function VerifyPage() {
       case 'loading':
         return (
           <div className="text-center space-y-4">
-            <Loader2 className="h-12 w-12 text-blue-500 animate-spin mx-auto" />
-            <p className="text-lg text-gray-200">{message}</p>
+            <Loader2 className={`h-12 w-12 ${colors.primary.text[500]} animate-spin mx-auto`} />
+            <p className={`text-lg ${theme.light.foreground}`}>{message}</p>
           </div>
         )
       case 'success':
         return (
           <div className="text-center space-y-4">
-            <CheckCircle className="h-12 w-12 text-green-500 mx-auto" />
-            <h2 className="text-2xl font-bold text-white">¡Verificación exitosa!</h2>
-            <p className="text-gray-300">{message}</p>
+            <CheckCircle className={`h-12 w-8 ${colors.green[500]} mx-auto`} />
+            <h2 className={`text-2xl font-bold ${theme.light.foreground}`}>¡Verificación exitosa!</h2>
+            <p className={colorCombos.secondaryText}>{message}</p>
           </div>
         )
       case 'error':
         return (
           <div className="text-center space-y-6">
             <div className="space-y-2">
-              <AlertCircle className="h-12 w-12 text-red-500 mx-auto" />
-              <h2 className="text-2xl font-bold text-white">Error de verificación</h2>
-              <p className="text-gray-300">{message}</p>
+              <AlertCircle className={`h-12 w-12 ${colors.primary.text[500]} mx-auto`} />
+              <h2 className={`text-2xl font-bold ${theme.light.foreground}`}>Error de verificación</h2>
+              <p className={colorCombos.secondaryText}>{message}</p>
             </div>
 
             {email && (
               <Button
                 onClick={handleResend}
                 disabled={isResending}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className={`w-full ${colorCombos.primaryButton}`}
               >
                 {isResending ? 'Enviando...' : 'Reenviar correo'}
               </Button>
@@ -129,7 +130,7 @@ export default function VerifyPage() {
             <Button
               variant="outline"
               onClick={() => router.push('/')}
-              className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+              className={`w-full ${colorCombos.secondaryButton}`}
             >
               Volver al inicio
             </Button>
@@ -139,8 +140,8 @@ export default function VerifyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-8 shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white flex items-center justify-center p-4">
+      <div className={`w-full max-w-md ${theme.light.card} backdrop-blur-sm rounded-xl ${theme.light.border} p-8 shadow-xl`}>
         {renderContent()}
       </div>
     </div>
