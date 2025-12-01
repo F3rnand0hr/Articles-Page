@@ -28,7 +28,7 @@ export default function SignUpSuccessPage() {
               Te hemos enviado un email de confirmación. Haz clic en el enlace para activar tu cuenta y comenzar a
               participar en las discusiones.
             </p>
-            <div className="space-y-2">
+            <div className="flex flex-col gap-4 mt-4">
               <Link href="/auth/login">
                 <Button className={`w-full ${colorCombos.primaryButton}`}>Ir a Iniciar Sesión</Button>
               </Link>

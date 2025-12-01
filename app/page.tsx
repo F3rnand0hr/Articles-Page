@@ -1,11 +1,38 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Scale, BookOpen, Users, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
+import { createClient } from "@/lib/supabase/client"
 
 export default function HomePage() {
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+        setUser(user)
+      } catch (error) {
+        console.error("Error checking user on home page:", error)
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    void checkUser()
+  }, [supabase])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
       {/* Navigation */}
@@ -122,23 +149,27 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className={`${colors.white[200]} ${theme.light.border} border-t`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="text-center space-y-6">
-              <h2 className={`text-3xl font-bold ${theme.light.foreground}`}>Únete a Nuestra Comunidad</h2>
-              <p className={`${colorCombos.secondaryText} text-lg max-w-2xl mx-auto`}>
-                Regístrate para acceder a contenido exclusivo, participar en discusiones y conectar con profesionales
-                del derecho
-              </p>
-              <Link href="/auth/sign-up">
-                <Button size="lg" className={colorCombos.primaryButton}>
-                  Crear Cuenta Gratuita
-                </Button>
-              </Link>
+        {/* CTA Section - hidden when user is logged in */}
+        {!loading && !user && (
+          <div className={`${colors.white[200]} ${theme.light.border} border-t`}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center space-y-6">
+                <h2 className={`text-3xl font-bold ${theme.light.foreground}`}>
+                  Únete a Nuestra Comunidad
+                </h2>
+                <p className={`${colorCombos.secondaryText} text-lg max-w-2xl mx-auto`}>
+                  Regístrate para acceder a contenido exclusivo, participar en discusiones y conectar con profesionales
+                  del derecho
+                </p>
+                <Link href="/auth/sign-up">
+                  <Button size="lg" className={colorCombos.primaryButton}>
+                    Crear Cuenta Gratuita
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </main>
 
       {/* Footer */}

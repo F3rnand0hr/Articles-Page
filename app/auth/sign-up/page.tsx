@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { colors, colorCombos, theme } from "@/lib/colors"
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,25 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const supabase = createClient()
+
+  useEffect(() => {
+    const checkExistingUser = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+
+        if (user) {
+          router.replace("/")
+        }
+      } catch (error) {
+        console.error("Error checking existing user on sign-up page:", error)
+      }
+    }
+
+    void checkExistingUser()
+  }, [router, supabase])
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,8 +79,8 @@ export default function SignUpPage() {
         return
       }
 
-      // Redirect to verify page if email confirmation is enabled
-      router.push("/auth/verify")
+      // Redirigir a la página de éxito para indicar que revise su correo
+      router.push("/auth/sign-up-success")
     } catch (error) {
       console.error("Error during sign up:", error)
       const errorMessage = error instanceof Error ? error.message : 'Error al crear la cuenta. Por favor intenta de nuevo.'
@@ -102,6 +122,8 @@ export default function SignUpPage() {
                   placeholder="Tu nombre"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
+                  onInvalid={(e) => e.currentTarget.setCustomValidity("Por favor completa este campo.")}
+                  onInput={(e) => e.currentTarget.setCustomValidity("")}
                   className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                   minLength={3}
@@ -119,6 +141,8 @@ export default function SignUpPage() {
                   placeholder="tucorreo@ejemplo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onInvalid={(e) => e.currentTarget.setCustomValidity("Por favor completa este campo.")}
+                  onInput={(e) => e.currentTarget.setCustomValidity("")}
                   className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                 />
@@ -134,6 +158,8 @@ export default function SignUpPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onInvalid={(e) => e.currentTarget.setCustomValidity("Por favor completa este campo.")}
+                  onInput={(e) => e.currentTarget.setCustomValidity("")}
                   className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                   minLength={6}
@@ -150,6 +176,8 @@ export default function SignUpPage() {
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  onInvalid={(e) => e.currentTarget.setCustomValidity("Por favor completa este campo.")}
+                  onInput={(e) => e.currentTarget.setCustomValidity("")}
                   className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}
                   required
                   minLength={6}
@@ -166,7 +194,7 @@ export default function SignUpPage() {
 
               <p className={`text-center text-sm ${colorCombos.mutedText}`}>
                 ¿Ya tienes una cuenta?{' '}
-                <Link href="/auth/sign-in" className={`${colors.primary.text[600]} hover:underline`}>
+                <Link href="/auth/login" className={`${colors.primary.text[600]} hover:underline`}>
                   Iniciar Sesión
                 </Link>
               </p>

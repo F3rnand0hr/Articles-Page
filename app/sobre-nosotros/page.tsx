@@ -1,11 +1,38 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Scale, Users, BookOpen, Target } from "lucide-react"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
+import { createClient } from "@/lib/supabase/client"
 
 export default function SobreNosotrosPage() {
+    const [user, setUser] = useState<SupabaseUser | null>(null)
+    const [loading, setLoading] = useState(true)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const checkUser = async () => {
+            try {
+                const {
+                    data: { user },
+                } = await supabase.auth.getUser()
+                setUser(user)
+            } catch (error) {
+                console.error("Error checking user on about page:", error)
+                setUser(null)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        void checkUser()
+    }, [supabase])
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
             {/* Navigation */}
@@ -122,19 +149,25 @@ export default function SobreNosotrosPage() {
                     </Card>
                 </div>
 
-                {/* CTA Section */}
+                {/* CTA Section - hide sign-up for logged-in users but keep "Explorar Artículos" */}
                 <div className="text-center">
-                    <h2 className={`text-3xl font-bold ${theme.light.foreground} mb-6`}>Únete a Nuestra Comunidad</h2>
-                    <p className={`${colorCombos.secondaryText} text-lg mb-8 max-w-2xl mx-auto`}>
-                        ¿Interesado en contribuir o simplemente quieres ser parte de nuestras discusiones? Te invitamos a unirte a
-                        nuestra comunidad.
-                    </p>
+                    {!loading && !user && (
+                        <>
+                            <h2 className={`text-3xl font-bold ${theme.light.foreground} mb-6`}>Únete a Nuestra Comunidad</h2>
+                            <p className={`${colorCombos.secondaryText} text-lg mb-8 max-w-2xl mx-auto`}>
+                                ¿Interesado en contribuir o simplemente quieres ser parte de nuestras discusiones? Te invitamos a unirte a
+                                nuestra comunidad.
+                            </p>
+                        </>
+                    )}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/auth/sign-up">
-                            <Button size="lg" className={colorCombos.primaryButton}>
-                                Crear Cuenta
-                            </Button>
-                        </Link>
+                        {!loading && !user && (
+                            <Link href="/auth/sign-up">
+                                <Button size="lg" className={colorCombos.primaryButton}>
+                                    Crear Cuenta
+                                </Button>
+                            </Link>
+                        )}
                         <Link href="/articulos">
                             <Button
                                 size="lg"

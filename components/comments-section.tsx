@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageCircle, Reply, User } from "lucide-react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
+import { colors, colorCombos, theme } from "@/lib/colors"
 
 interface Comment {
   id: string
@@ -18,7 +19,7 @@ interface Comment {
   parent_id: string | null
   profiles: {
     display_name: string
-  }
+  }[]
   replies?: Comment[]
 }
 
@@ -153,17 +154,19 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
   }
 
   const CommentItem = ({ comment, depth = 0 }: { comment: Comment; depth?: number }) => (
-    <div className={`${depth > 0 ? "ml-8 border-l border-slate-700 pl-4" : ""}`}>
-      <Card className="bg-slate-800/30 border-slate-700 mb-4">
+    <div className={`${depth > 0 ? "ml-8 border-l border-gray-200 pl-4" : ""}`}>
+      <Card className={`${theme.light.card} ${theme.light.border} mb-4`}>
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="h-4 w-4 text-slate-400" />
+            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <User className="h-4 w-4 text-gray-500" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <span className="font-medium text-white">{comment.profiles?.display_name || "Usuario"}</span>
-                <span className="text-sm text-slate-400">
+                <span className={`font-medium ${theme.light.foreground}`}>
+                  {comment.profiles?.[0]?.display_name || "Usuario"}
+                </span>
+                <span className="text-sm text-gray-500">
                   {new Date(comment.created_at).toLocaleDateString("es-ES", {
                     year: "numeric",
                     month: "short",
@@ -173,13 +176,13 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
                   })}
                 </span>
               </div>
-              <p className="text-slate-200 mb-3 whitespace-pre-wrap">{comment.content}</p>
+              <p className={`${colorCombos.secondaryText} mb-3 whitespace-pre-wrap`}>{comment.content}</p>
               {user && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                  className="text-slate-400 hover:text-white hover:bg-slate-700 p-0 h-auto"
+                  className="text-gray-500 hover:text-gray-800 hover:bg-gray-100 p-0 h-auto"
                 >
                   <Reply className="h-3 w-3 mr-1" />
                   Responder
@@ -195,7 +198,7 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Escribe tu respuesta..."
-                className="bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-400 mb-3"
+                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 mb-3"
                 rows={3}
               />
               <div className="flex gap-2">
@@ -203,7 +206,7 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
                   type="submit"
                   size="sm"
                   disabled={!replyContent.trim() || submitting}
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className={colorCombos.primaryButton}
                 >
                   {submitting ? "Enviando..." : "Responder"}
                 </Button>
@@ -234,21 +237,21 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
 
   if (loading) {
     return (
-      <Card className="bg-slate-800/30 border-slate-700">
+      <Card className={`${theme.light.card} ${theme.light.border}`}>
         <CardContent className="p-8 text-center">
-          <MessageCircle className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-          <p className="text-slate-400">Cargando comentarios...</p>
+          <MessageCircle className={`h-12 w-12 ${colors.primary.text[400]} mx-auto mb-4`} />
+          <p className={colorCombos.secondaryText}>Cargando comentarios...</p>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className="bg-slate-800/30 border-slate-700">
+    <Card className={`${theme.light.card} ${theme.light.border}`}>
       <CardContent className="p-6">
         <div className="flex items-center gap-2 mb-6">
-          <MessageCircle className="h-5 w-5 text-slate-400" />
-          <h3 className="text-xl font-semibold text-white">
+          <MessageCircle className={`h-5 w-5 ${colors.primary.text[500]}`} />
+          <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>
             Comentarios ({comments.reduce((total, comment) => total + 1 + (comment.replies?.length || 0), 0)})
           </h3>
         </div>
@@ -257,21 +260,21 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
         {user ? (
           <form onSubmit={handleSubmitComment} className="mb-8">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="h-4 w-4 text-slate-400" />
+              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="h-4 w-4 text-gray-500" />
               </div>
               <div className="flex-1">
                 <Textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Comparte tu opinión sobre este artículo..."
-                  className="bg-slate-900/50 border-slate-600 text-white placeholder:text-slate-400 mb-3"
+                  className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 mb-3"
                   rows={4}
                 />
                 <Button
                   type="submit"
                   disabled={!newComment.trim() || submitting}
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className={colorCombos.primaryButton}
                 >
                   {submitting ? "Enviando..." : "Publicar Comentario"}
                 </Button>
@@ -279,9 +282,9 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
             </div>
           </form>
         ) : (
-          <div className="text-center mb-8 p-6 bg-slate-900/30 rounded-lg border border-slate-700">
-            <p className="text-slate-400 mb-4">Inicia sesión para participar en la discusión</p>
-            <Button className="bg-red-600 hover:bg-red-700 text-white">
+          <div className="text-center mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+            <p className={colorCombos.secondaryText + " mb-4"}>Inicia sesión para participar en la discusión</p>
+            <Button className={colorCombos.primaryButton}>
               <a href="/auth/login">Iniciar Sesión</a>
             </Button>
           </div>
@@ -296,8 +299,8 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
           </div>
         ) : (
           <div className="text-center py-8">
-            <MessageCircle className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-            <p className="text-slate-400">
+            <MessageCircle className={`h-12 w-12 ${colors.primary.text[400]} mx-auto mb-4`} />
+            <p className={colorCombos.secondaryText}>
               {user ? "Sé el primero en comentar este artículo" : "No hay comentarios aún"}
             </p>
           </div>

@@ -35,7 +35,7 @@ export default function LoginPage() {
       router.push("/articulos")
       router.refresh()
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      setError(error instanceof Error ? error.message : "Ocurrió un error. Por favor intenta nuevamente.")
     } finally {
       setIsLoading(false)
     }

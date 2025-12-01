@@ -21,6 +21,35 @@ export function UserNav() {
 
   useEffect(() => {
     checkUser()
+
+    // Debug click events
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target?.closest && target.closest('#sign-out-button')) {
+        console.log('Global click caught on sign out button')
+      }
+    }
+
+    document.addEventListener('click', handleGlobalClick, true)
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event)
+      if (event === 'SIGNED_OUT') {
+        console.log('Auth: User signed out')
+        setUser(null)
+        setProfile(null)
+        setDropdownOpen(false)
+      } else if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        console.log('Auth: User signed in or initial session')
+        checkUser()
+      }
+    })
+
+    return () => {
+      document.removeEventListener('click', handleGlobalClick, true)
+      subscription?.unsubscribe()
+    }
   }, [])
 
   useEffect(() => {
@@ -61,53 +90,22 @@ export function UserNav() {
   }
 
   const handleSignOut = async () => {
-    console.log("Sign out function called")
+    console.log("1. Sign out button clicked")
+
     try {
-      // Sign out from Supabase
-      await supabase.auth.signOut()
-      console.log("Supabase sign out completed")
+      const { data, error } = await supabase.auth.getSession()
+      console.log("1a. Current session before signout:", data, error)
 
-      // Clear all local storage
-      localStorage.clear()
-      console.log("Local storage cleared")
+      const { error: signOutError } = await supabase.auth.signOut()
+      console.log("2. signOut result:", signOutError)
 
-      // Clear all session storage
-      sessionStorage.clear()
-      console.log("Session storage cleared")
+      if (signOutError) throw signOutError
 
-      // Clear Supabase specific storage
-      if (typeof window !== 'undefined') {
-        // Remove any Supabase related items
-        Object.keys(localStorage).forEach(key => {
-          if (key.includes('supabase') || key.includes('sb-')) {
-            localStorage.removeItem(key)
-          }
-        })
-        Object.keys(sessionStorage).forEach(key => {
-          if (key.includes('supabase') || key.includes('sb-')) {
-            sessionStorage.removeItem(key)
-          }
-        })
-        console.log("Supabase specific storage cleared")
-      }
-
-      // Clear user state
-      setUser(null)
-      setProfile(null)
-      setLoading(false)
-      console.log("User state cleared")
-
-      // Force component remount
-      setRemountKey(prev => prev + 1)
-      console.log("Component remount triggered")
-
-      // Redirect to home page
+      console.log("3. Redirecting to / from handleSignOut")
       router.push("/")
-      router.refresh()
-      console.log("Redirect completed")
-
     } catch (error) {
-      console.error("Error signing out:", error)
+      console.error("Error during sign out:", error)
+      alert("Error al cerrar sesión. Por favor intenta nuevamente.")
       setLoading(false)
     }
   }
@@ -149,7 +147,19 @@ export function UserNav() {
   }
 
   return (
-    <div key={remountKey} className="relative">
+    <div
+      key={remountKey}
+      className="relative"
+      onClickCapture={(e) => {
+        const target = e.target as HTMLElement
+        if (target?.closest && target.closest('#sign-out-button')) {
+          e.preventDefault()
+          e.stopPropagation()
+          console.log('Capture: sign out clicked')
+          handleSignOut()
+        }
+      }}
+    >
       <Button
         variant="outline"
         size="sm"
@@ -172,15 +182,12 @@ export function UserNav() {
       >
         <div className="p-2">
           <button
-            className={`w-full text-left px-3 py-2 rounded ${theme.light.foreground} hover:bg-gray-100 flex items-center gap-2`}
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              handleSignOut()
-            }}
+            id="sign-out-button"
+            type="button"
+            className={`w-full justify-start px-3 py-2 rounded ${theme.light.foreground} hover:bg-npgray-100 flex items-center gap-2`}
           >
             <LogOut className="h-4 w-4" />
-            <span>Cerrar Sesión</span>
+            <span>Cerrar Sesión </span>
           </button>
         </div>
       </div>
