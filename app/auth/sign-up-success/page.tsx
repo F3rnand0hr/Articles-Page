@@ -10,7 +10,7 @@ export default function SignUpSuccessPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <Scale className={`h-8 w-8 ${colors.primary.text[500]}`} />
+            <Scale className={`h-8 w-8 ${colors.primary.text[700]}`} />
             <span className={`text-2xl font-bold ${theme.light.foreground}`}>Derecho en Perspectiva</span>
           </Link>
         </div>

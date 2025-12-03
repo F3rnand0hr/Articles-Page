@@ -5,97 +5,71 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
 import type { User } from "@supabase/supabase-js"
+import { toggleArticleLike } from "@/app/actions/article-actions"
+import { toast } from "@/hooks/use-toast"
 
 interface LikeButtonProps {
   articleId: string
   initialLikesCount: number
+  initialIsLiked?: boolean
   variant?: "default" | "outline"
   size?: "default" | "sm" | "lg"
+  className?: string
 }
 
-export function LikeButton({ articleId, initialLikesCount, variant = "default", size = "default" }: LikeButtonProps) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLiked, setIsLiked] = useState(false)
+export function LikeButton({
+  articleId,
+  initialLikesCount,
+  initialIsLiked = false,
+  variant = "outline",
+  size = "default",
+  className = ""
+}: LikeButtonProps) {
+  const [isLiked, setIsLiked] = useState(initialIsLiked)
   const [likesCount, setLikesCount] = useState(initialLikesCount)
   const [isLoading, setIsLoading] = useState(false)
-
   const supabase = createClient()
 
-  useEffect(() => {
-    checkUser()
-  }, [])
-
-  useEffect(() => {
-    if (user) {
-      checkIfLiked()
-    }
-  }, [user, articleId])
-
-  const checkUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    setUser(user)
-  }
-
-  const checkIfLiked = async () => {
-    if (!user) return
-
+  const handleLike = async () => {
+    setIsLoading(true)
     try {
-      const { data, error } = await supabase
-        .from("article_likes")
-        .select("id")
-        .eq("article_id", articleId)
-        .eq("user_id", user.id)
-        .single()
+      const { data: { user } } = await supabase.auth.getUser()
 
-      if (error && error.code !== "PGRST116") {
-        console.error("Error checking like status:", error)
+      if (!user) {
+        toast({
+          title: "Inicia sesión",
+          description: "Por favor iniciar sesión o crear una cuenta para dar like.",
+        })
         return
       }
 
-      setIsLiked(!!data)
-    } catch (error) {
-      console.error("Error checking like status:", error)
-    }
-  }
+      const { error } = await toggleArticleLike(articleId, user.id)
 
-  const handleLike = async () => {
-    if (!user) {
-      // Redirect to login
-      window.location.href = "/auth/login"
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      if (isLiked) {
-        // Unlike
-        const { error } = await supabase
-          .from("article_likes")
-          .delete()
-          .eq("article_id", articleId)
-          .eq("user_id", user.id)
-
-        if (error) throw error
-
-        setIsLiked(false)
-        setLikesCount((prev) => prev - 1)
-      } else {
-        // Like
-        const { error } = await supabase.from("article_likes").insert({
-          article_id: articleId,
-          user_id: user.id,
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error al actualizar el like",
+          description: String(error),
         })
-
-        if (error) throw error
-
-        setIsLiked(true)
-        setLikesCount((prev) => prev + 1)
+        return
       }
+
+      // Optimistic update
+      if (isLiked) {
+        setLikesCount(prev => Math.max(0, prev - 1))
+      } else {
+        setLikesCount(prev => prev + 1)
+        setIsLiked(!isLiked)
+      }
+
+
     } catch (error) {
-      console.error("Error toggling like:", error)
+      console.error('Error toggling like:', error)
+      toast({
+        variant: "destructive",
+        title: "Error al actualizar el like",
+        description: "Ocurrió un error al actualizar el like.",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -103,18 +77,17 @@ export function LikeButton({ articleId, initialLikesCount, variant = "default", 
 
   return (
     <Button
+      variant={isLiked ? 'default' : variant}
+      size={size}
       onClick={handleLike}
       disabled={isLoading}
-      variant={variant}
-      size={size}
-      className={
-        variant === "default"
-          ? `${isLiked ? "bg-red-600 hover:bg-red-700" : "bg-red-600 hover:bg-red-700"} text-white`
-          : "border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"
-      }
+      className={`gap-2 ${isLiked ? 'bg-red-600 hover:bg-red-700' : ''} ${className}`}
     >
-      <Heart className={`h-4 w-4 mr-2 ${isLiked ? "fill-current" : ""}`} />
-      {isLiked ? "Te Gusta" : "Me Gusta"} ({likesCount})
+      <Heart
+        className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`}
+        fill={isLiked ? 'currentColor' : 'none'}
+      />
+      <span>{likesCount}</span>
     </Button>
   )
 }

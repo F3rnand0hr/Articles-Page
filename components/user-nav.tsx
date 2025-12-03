@@ -90,21 +90,15 @@ export function UserNav() {
   }
 
   const handleSignOut = async () => {
-    console.log("1. Sign out button clicked")
-
     try {
-      const { data, error } = await supabase.auth.getSession()
-      console.log("1a. Current session before signout:", data, error)
-
       const { error: signOutError } = await supabase.auth.signOut()
-      console.log("2. signOut result:", signOutError)
 
       if (signOutError) throw signOutError
 
-      console.log("3. Redirecting to / from handleSignOut")
+      setUser(null)
+      setProfile(null)
       router.push("/")
     } catch (error) {
-      console.error("Error during sign out:", error)
       alert("Error al cerrar sesión. Por favor intenta nuevamente.")
       setLoading(false)
     }

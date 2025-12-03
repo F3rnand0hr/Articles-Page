@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Scale, Heart, MessageCircle, Calendar, User } from "lucide-react"
+import { AnimatedArticlesGrid } from "@/components/animated-articles-grid"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
@@ -174,73 +175,7 @@ export default async function ArticulosPage() {
         {/* Articles Grid */}
         <div className="mb-12">
           <h2 className={`text-2xl font-bold ${theme.light.foreground} mb-8`}>Artículos recientes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...featuredArticles.slice(1), ...regularArticles].map((article) => (
-              <article key={article.id} className={`${theme.light.card} rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 ${theme.light.border} border`}>
-                <div className={`h-48 ${colors.white[100]} overflow-hidden`}>
-                  <img
-                    src="/images/placeholder-article.jpg"
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center text-sm mb-3">
-                    <span className={`bg-blue-100 ${colors.blue.text[800]} text-xs font-medium px-2.5 py-0.5 rounded-full`}>
-                      {article.category}
-                    </span>
-                    <span className={`mx-2 ${colors.white.text[400]}`}>•</span>
-                    <span className={colorCombos.mutedText}>
-                      {new Date(article.created_at).toLocaleDateString("es-ES", {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}
-                    </span>
-                  </div>
-                  <h3 className={`text-xl font-bold ${theme.light.foreground} mb-3 line-clamp-2`}>
-                    {article.title}
-                  </h3>
-                  <p className={`${colorCombos.mutedText} mb-4 line-clamp-3`}>
-                    {article.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="flex -space-x-2">
-                        {article.article_authors.slice(0, 2).map((author) => {
-                          const profile = author.profiles;
-                          return (
-                            <div key={profile.id} className="relative group">
-                              {profile.avatar_url ? (
-                                <img
-                                  src={profile.avatar_url}
-                                  alt={profile.display_name || 'Autor'}
-                                  className="h-6 w-6 rounded-full border-2 border-white"
-                                />
-                              ) : (
-                                <div className={`h-6 w-6 rounded-full ${colors.white[200]} flex items-center justify-center`}>
-                                  <User className={`h-3 w-3 ${colors.white.text[600]}`} />
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <span className={`ml-2 text-sm ${colorCombos.mutedText}`}>
-                        {article.article_authors[0]?.profiles?.display_name || 'Autor'}
-                        {article.article_authors.length > 1 && ` +${article.article_authors.length - 1}`}
-                      </span>
-                    </div>
-                    <Link href={`/articulos/${article.id}`}>
-                      <Button variant="ghost" className={`${colors.primary.text[600]} ${colors.primary.hover[50]}`}>
-                        Leer más
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+          <AnimatedArticlesGrid articles={[...featuredArticles.slice(1), ...regularArticles]} />
         </div>
 
         {/* Empty State */}
@@ -255,11 +190,13 @@ export default async function ArticulosPage() {
         )}
 
         {/* Load More Button */}
-        <div className="flex justify-center mt-8">
-          <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
-            Cargar más artículos
-          </Button>
-        </div>
+        {articles && articles.length > 0 && (
+          <div className="flex justify-center mt-8">
+            <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cargar más artículos
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   )

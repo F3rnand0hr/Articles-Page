@@ -9,6 +9,8 @@ import { CommentsSection } from "@/components/comments-section"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { colors, colorCombos, theme } from "@/lib/colors"
+import { hasUserLikedArticle } from "@/app/actions/article-actions"
+import { AuthorSection } from "@/components/author-section"
 
 type Profile = {
   id: string
@@ -80,8 +82,27 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = data as Article | null
 
   if (error || !article) {
-    notFound()
+    return notFound()
   }
+
+  // Get current user session
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Check if user has liked the article and get the actual like count
+  let isLiked = false
+  let actualLikesCount = 0
+
+  // Get the like count and check if user has liked the article in parallel
+  const [{ count }, likeStatus] = await Promise.all([
+    supabase
+      .from('article_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('article_id', article.id),
+    user ? hasUserLikedArticle(article.id, user.id) : { liked: false, error: null }
+  ])
+
+  actualLikesCount = count || 0
+  isLiked = likeStatus.liked || false
 
   // Sort authors to show primary author first
   const sortedAuthors = article.article_authors
@@ -95,7 +116,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
-              <Scale className={`h-8 w-8 ${colors.primary.text[500]}`} />
+              <Scale className={`h-8 w-8 ${colors.primary.text[700]}`} />
               <span className={`text-xl font-bold ${theme.light.foreground}`}>Derecho en Perspectiva</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
@@ -121,7 +142,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </Button>
           </Link>
         </div>
-
         {/* Article Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
@@ -166,10 +186,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <div className={`text-sm ${colorCombos.secondaryText}`}>
-                    Por {sortedAuthors[0]?.display_name || 'Autor'}
-                    {sortedAuthors.length > 1 && ` y ${sortedAuthors.length - 1} más`}
-                  </div>
+                  <AuthorSection
+                    primaryName={sortedAuthors[0]?.display_name || null}
+                    extraCount={sortedAuthors.length > 1 ? sortedAuthors.length - 1 : 0}
+                    authors={sortedAuthors}
+                  />
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -184,27 +205,36 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <MessageCircle className="h-5 w-5" />
                 <span>{article.comments_count}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
-        {/* Article Content */}
-        <Card className={`${theme.light.card} ${theme.light.border} mb-8`}>
-          <CardContent className="p-8">
-            <div className="prose max-w-none">
-              <div className={`${colorCombos.secondaryText} leading-relaxed whitespace-pre-wrap text-lg`}>
-                {article.content}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Authors Info */}
+        {/* Interaction Buttons */}
+        <div className="flex items-center gap-4 mb-8">
+          <LikeButton
+            articleId={article.id}
+            initialLikesCount={actualLikesCount}
+            initialIsLiked={isLiked}
+          />
+          {/* <Button
+            variant="outline"
+            className={`border-gray-300 text-gray-700 hover:bg-gray-50`}
+          >
+            <MessageCircle className="h-4 w-4 mr-2" />
+            Comentar ({article.comments_count})
+          </Button> */}
+        </div>
+        {/**
+         * Authors Info (temporarily disabled)
+         *
+         * To re-enable, remove this JSX comment wrapper.
+         */}
+        {/**
         <Card className={`${theme.light.card} ${theme.light.border} mb-8`}>
           <CardContent className="p-6">
             <h3 className={`text-lg font-semibold ${theme.light.foreground} mb-4`}>Sobre los autores</h3>
@@ -231,22 +261,25 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </div>
           </CardContent>
         </Card>
-
-        {/* Interaction Buttons */}
-        <div className="flex items-center gap-4 mb-8">
-          <LikeButton articleId={article.id} initialLikesCount={article.likes_count} />
-          <Button
-            variant="outline"
-            className={`border-gray-300 text-gray-700 hover:bg-gray-50`}
-          >
-            <MessageCircle className="h-4 w-4 mr-2" />
-            Comentar ({article.comments_count})
-          </Button>
-        </div>
+        */}
 
         {/* Comments Section */}
-        <CommentsSection articleId={article.id} initialCommentsCount={article.comments_count} />
+        {/* <div className="mb-16">
+          <CommentsSection articleId={article.id} initialCommentsCount={article.comments_count} />
+        </div> */}
+
+        {/* Article Content */}
+        <Card className={`${theme.light.card} ${theme.light.border} mb-8`}>
+          <CardContent className="p-8">
+            <div className="prose max-w-none">
+              <div className={`${colorCombos.secondaryText} leading-relaxed whitespace-pre-wrap text-lg`}>
+                {article.content}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
+
   )
 }

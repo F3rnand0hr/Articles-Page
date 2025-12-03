@@ -4,16 +4,41 @@ import { useEffect, useState } from "react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Scale, BookOpen, Users, MessageCircle } from "lucide-react"
+import { Scale, BookOpen, Users, MessageCircle, LogOut, Instagram, Linkedin } from "lucide-react"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
 import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
+import { motion, Variants } from "framer-motion"
+
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+}
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+}
 
 export default function HomePage() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
+  const router = useRouter()
 
   useEffect(() => {
     const checkUser = async () => {
@@ -40,8 +65,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <Scale className={`h-8 w-8 ${colors.primary.text[500]}`} />
-              <span className={`text-xl font-bold ${theme.light.foreground}`}>Derecho en Perspectiva</span>
+              <Scale className={`h-8 w-8 ${colors.primary.text[700]}`} />
+              <span className={`text-xl font-bold ${theme.light.foreground}`}>
+                Derecho en Perspectiva
+              </span>
             </div>
             <div className="hidden md:flex items-center gap-6">
               <Link href="/articulos" className={`${colorCombos.navLink} transition-colors`}>
@@ -65,7 +92,7 @@ export default function HomePage() {
               <div className="space-y-4">
                 <h1 className={`text-5xl lg:text-6xl font-bold ${theme.light.foreground} leading-tight text-balance`}>
                   Derecho en
-                  <span className={`block ${colors.primary.text[500]}`}>Perspectiva</span>
+                  <span className={`block ${colors.primary.text[700]}`}>Perspectiva</span>
                 </h1>
                 <p className={`text-xl ${colorCombos.secondaryText} leading-relaxed text-pretty`}>
                   Bienvenido a nuestra plataforma de contenido legal. Explora artículos especializados, participa en
@@ -116,37 +143,62 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors`}>
-              <CardContent className="p-6 text-center space-y-4">
-                <div className={`w-12 h-12 ${colorCombos.iconBg.red} rounded-lg flex items-center justify-center mx-auto`}>
-                  <BookOpen className={`h-6 w-6 ${colorCombos.icon.red}`} />
-                </div>
-                <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Artículos Especializados</h3>
-                <p className={colorCombos.secondaryText}>Contenido legal de alta calidad cubriendo todas las ramas del derecho</p>
-              </CardContent>
-            </Card>
+          <motion.div
+            className="grid md:grid-cols-3 gap-8"
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, margin: "-50px 0px 0px 0px" }}
+            onViewportEnter={() => { }}
+          >
+            <motion.div variants={item}>
+              <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors h-full`}>
+                <CardContent className="p-6 text-center space-y-4">
+                  <motion.div
+                    className={`w-12 h-12 ${colorCombos.iconBg.red} rounded-lg flex items-center justify-center mx-auto`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <BookOpen className={`h-6 w-6 ${colorCombos.icon.red}`} />
+                  </motion.div>
+                  <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Artículos Especializados</h3>
+                  <p className={colorCombos.secondaryText}>Contenido legal de alta calidad cubriendo todas las ramas del derecho</p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors`}>
-              <CardContent className="p-6 text-center space-y-4">
-                <div className={`w-12 h-12 ${colorCombos.iconBg.blue} rounded-lg flex items-center justify-center mx-auto`}>
-                  <MessageCircle className={`h-6 w-6 ${colorCombos.icon.blue}`} />
-                </div>
-                <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Discusiones Activas</h3>
-                <p className={colorCombos.secondaryText}>Participa en debates jurídicos con profesionales y estudiantes</p>
-              </CardContent>
-            </Card>
+            <motion.div variants={item}>
+              <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors h-full`}>
+                <CardContent className="p-6 text-center space-y-4">
+                  <motion.div
+                    className={`w-12 h-12 ${colorCombos.iconBg.blue} rounded-lg flex items-center justify-center mx-auto`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <MessageCircle className={`h-6 w-6 ${colorCombos.icon.blue}`} />
+                  </motion.div>
+                  <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Discusiones Activas</h3>
+                  <p className={colorCombos.secondaryText}>Participa en debates jurídicos con profesionales y estudiantes</p>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-            <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors`}>
-              <CardContent className="p-6 text-center space-y-4">
-                <div className={`w-12 h-12 ${colorCombos.iconBg.green} rounded-lg flex items-center justify-center mx-auto`}>
-                  <Users className={`h-6 w-6 ${colorCombos.icon.green}`} />
-                </div>
-                <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Comunidad Legal</h3>
-                <p className={colorCombos.secondaryText}>Conecta con expertos y colegas del ámbito jurídico</p>
-              </CardContent>
-            </Card>
-          </div>
+            <motion.div variants={item}>
+              <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors h-full`}>
+                <CardContent className="p-6 text-center space-y-4">
+                  <motion.div
+                    className={`w-12 h-12 ${colorCombos.iconBg.green} rounded-lg flex items-center justify-center mx-auto`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Users className={`h-6 w-6 ${colorCombos.icon.green}`} />
+                  </motion.div>
+                  <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Comunidad Legal</h3>
+                  <p className={colorCombos.secondaryText}>Conecta con expertos y colegas del ámbito jurídico</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* CTA Section - hidden when user is logged in */}
@@ -172,15 +224,79 @@ export default function HomePage() {
         )}
       </main>
 
+      {/* Mobile bottom nav for narrow screens */}
+      <div className="md:hidden border-t border-gray-200 bg-white/90 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-center gap-4">
+          <Link href="/articulos" className={`${colorCombos.navLink} transition-colors`}>
+            Artículos
+          </Link>
+          <Link href="/sobre-nosotros" className={`${colorCombos.navLink} transition-colors`}>
+            Sobre Nosotros
+          </Link>
+          {user ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className={`${colorCombos.secondaryButton} flex items-center gap-1`}
+              onClick={async () => {
+                try {
+                  await supabase.auth.signOut()
+                  setUser(null)
+                  router.push("/")
+                } catch (error) {
+                  console.error("Error al cerrar sesión desde el menú móvil:", error)
+                  alert("Error al cerrar sesión. Por favor intenta nuevamente.")
+                }
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Cerrar sesión</span>
+            </Button>
+          ) : (
+            <Link href="/auth/login">
+              <Button
+                variant="outline"
+                size="sm"
+                className={`${colorCombos.secondaryButton} flex items-center gap-1`}
+              >
+                <span>Iniciar sesión</span>
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+
       {/* Footer */}
       <footer className={`${colors.white[50]} ${theme.light.border} border-t`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Scale className={`h-6 w-6 ${colors.primary.text[500]}`} />
+              <Scale className={`h-6 w-6 ${colors.primary.text[700]}`} />
               <span className={`${theme.light.foreground} font-semibold`}>Derecho en Perspectiva</span>
             </div>
-            <p className={`${colorCombos.secondaryText} text-sm`}> 2024 Derecho en Perspectiva. Todos los derechos reservados.</p>
+            <div className="flex items-center gap-6">
+              <p className={`${colorCombos.secondaryText} text-sm`}> 2024 Derecho en Perspectiva. Todos los derechos reservados.</p>
+              <div className="flex items-center gap-4">
+                <a
+                  href="https://www.instagram.com/derechoenperspectiva"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${colorCombos.secondaryText} hover:${colors.primary.text[500]} transition-colors`}
+                  aria-label="Instagram"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/derecho-en-perspectiva"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${colorCombos.secondaryText} hover:text-[#0A66C2] transition-colors`}
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

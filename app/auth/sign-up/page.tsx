@@ -95,7 +95,7 @@ export default function SignUpPage() {
       <Card className={`w-full max-w-md ${theme.light.border} ${theme.light.card}`}>
         <CardHeader>
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <Scale className={`h-8 w-8 ${colors.primary.text[500]}`} />
+            <Scale className={`h-8 w-8 ${colors.primary.text[700]}`} />
             <span className={`text-2xl font-bold ${theme.light.foreground}`}>Derecho en Perspectiva</span>
           </div>
           <CardTitle className={`text-2xl ${theme.light.foreground} text-center`}>Crear Cuenta</CardTitle>
