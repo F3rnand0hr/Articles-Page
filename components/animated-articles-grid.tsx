@@ -1,5 +1,5 @@
 "use client"
-
+import { createClient } from "@/lib/supabase/server"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Scale, Heart, MessageCircle, Calendar, User } from "lucide-react"
 import Link from "next/link"
 import { colors, colorCombos, theme } from "@/lib/colors"
+
 
 export function AnimatedArticlesGrid({ articles }: { articles: any[] }) {
     const container = {
@@ -27,6 +28,7 @@ export function AnimatedArticlesGrid({ articles }: { articles: any[] }) {
     if (!articles || articles.length === 0) {
         return <div className="text-center py-12">No articles found</div>
     }
+
 
     return (
         <motion.div

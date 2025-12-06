@@ -134,6 +134,91 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Magazine Section */}
+        <div className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className={`text-3xl font-bold ${theme.light.foreground} mb-4`}>Revista Digital</h2>
+              <p className={`${colorCombos.secondaryText} text-lg max-w-2xl mx-auto`}>
+                Explora nuestra colección de artículos especializados en derecho
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Featured Article */}
+              <div className="md:col-span-2 lg:col-span-2">
+                <Link href="/articulos/1" className="group block h-full">
+                  <div className={`h-full rounded-2xl overflow-hidden shadow-lg ${colorCombos.lightCard} group-hover:shadow-xl transition-shadow duration-300`}>
+                    <div className="relative pt-[56.25%] bg-gray-100 overflow-hidden">
+                      <img
+                        src="/law-article.jpg"
+                        alt="Artículo destacado"
+                        className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                      <div className="absolute bottom-0 left-0 p-6 text-white">
+                        <span className="inline-block px-3 py-1 text-sm font-medium bg-white/20 backdrop-blur-sm rounded-full mb-2">
+                          Derecho Civil
+                        </span>
+                        <h3 className="text-2xl font-bold leading-tight mb-2 line-clamp-2">
+                          Análisis de las últimas reformas al Código Civil
+                        </h3>
+                        <p className="text-sm text-gray-200 line-clamp-2">
+                          Un examen detallado de los cambios recientes y su impacto en los derechos de propiedad y contratos.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+
+              {/* Secondary Articles */}
+              <div className="space-y-6">
+                {[1, 2, 3].map((item) => (
+                  <Link key={item} href={`/articulos/${item + 1}`} className="group block">
+                    <div className={`flex gap-4 p-4 rounded-xl ${colorCombos.lightCard} group-hover:bg-gray-50 transition-colors`}>
+                      <div className="flex-shrink-0 w-24 h-24 rounded-lg bg-gray-200 overflow-hidden">
+                        <img
+                          src={`/article-${item}.jpg`}
+                          alt={`Artículo ${item}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className={`font-medium ${theme.light.foreground} group-hover:${colors.primary[600]} transition-colors line-clamp-2`}>
+                          {[
+                            "Derechos humanos en la era digital",
+                            "Novedades en derecho laboral 2023",
+                            "La justicia restaurativa en el sistema penal"
+                          ][item - 1]}
+                        </h4>
+                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                          {[
+                            "Explorando los desafíos legales de la privacidad y protección de datos.",
+                            "Lo que necesitas saber sobre las nuevas regulaciones laborales.",
+                            "Un enfoque alternativo para la resolución de conflictos penales."
+                          ][item - 1]}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-12 text-center">
+              <Link href="/articulos">
+                <Button
+                  variant="outline"
+                  className={`${colorCombos.secondaryButton} border ${theme.light.border} hover:${colors.primary[50]} transition-colors`}
+                >
+                  Ver todos los artículos
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Features Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center mb-16">
@@ -200,6 +285,7 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
         </div>
+
 
         {/* CTA Section - hidden when user is logged in */}
         {!loading && !user && (
