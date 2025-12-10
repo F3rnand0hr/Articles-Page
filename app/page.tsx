@@ -103,16 +103,16 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/articulos">
                   <Button size="lg" className={colorCombos.primaryButton}>
-                    Explorar Artículos
+                    Explorar Revista
                   </Button>
                 </Link>
-                <Link href="/sobre-nosotros">
+                <Link href="/articulos">
                   <Button
                     variant="outline"
                     size="lg"
                     className={colorCombos.secondaryButton}
                   >
-                    Conocer Más
+                    Ver Artículos
                   </Button>
                 </Link>
               </div>
