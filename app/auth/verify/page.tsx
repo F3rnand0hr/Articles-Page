@@ -9,10 +9,12 @@ import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 
 type VerificationType = 'signup' | 'recovery' | 'email' | null
 
-export default function VerifyPage() {
+// Client-side only component
+function VerifyClient() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState<string>('Verificando tu correo...')
   const [isResending, setIsResending] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -21,53 +23,58 @@ export default function VerifyPage() {
   const email = searchParams.get('email')
 
   useEffect(() => {
-    const verifyToken = async () => {
-      if (!token) {
-        setStatus('error')
-        setMessage('No se proporcionó un token de verificación.')
-        return
-      }
+    setIsMounted(true)
+    
+    // Only run verification on the client side
+    if (typeof window !== 'undefined') {
+      verifyToken()
+    }
+  }, []) // Empty dependency array means this runs once on mount
 
-      const supabase = createClient()
-
-      try {
-        const { error } = await supabase.auth.verifyOtp({
-          token_hash: token,
-          type: type || 'email',
-          email: email || undefined
-        })
-
-        if (error) throw error
-
-        setStatus('success')
-        setMessage('¡Correo verificado con éxito! Redirigiendo...')
-
-        // Redirect based on verification type
-        setTimeout(() => {
-          if (type === 'recovery') {
-            router.push('/auth/update-password')
-          } else {
-            router.push('/articulos')
-          }
-        }, 2000)
-
-      } catch (error) {
-        console.error('Error during verification:', error)
-        setStatus('error')
-        setMessage('El enlace de verificación no es válido o ha expirado.')
-      }
+  const verifyToken = async () => {
+    if (!token) {
+      setStatus('error')
+      setMessage('No se proporcionó un token de verificación.')
+      return
     }
 
-    verifyToken()
-  }, [token, type, email, router])
+    const supabase = createClient()
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: type || 'email',
+        email: email || undefined
+      })
+
+      if (error) throw error
+
+      setStatus('success')
+      setMessage('¡Correo verificado con éxito! Redirigiendo...')
+
+      // Redirect based on verification type
+      setTimeout(() => {
+        if (type === 'recovery') {
+          router.push('/auth/update-password')
+        } else {
+          router.push('/articulos')
+        }
+      }, 2000)
+
+    } catch (error) {
+      console.error('Error during verification:', error)
+      setStatus('error')
+      setMessage('El enlace de verificación no es válido o ha expirado.')
+    }
+  }
 
   const handleResend = async () => {
-    setIsResending(true);
     if (!email) {
       setMessage('No se puede reenviar el correo sin una dirección de correo electrónico.')
       return
     }
 
+    setIsResending(true)
     setStatus('loading')
     setMessage('Enviando correo de verificación...')
 
@@ -75,7 +82,7 @@ export default function VerifyPage() {
 
     try {
       const { error } = await supabase.auth.resend({
-        type: 'signup', // Using 'signup' as the default type since 'recovery' is not a valid type
+        type: 'signup',
         email,
       })
 
@@ -87,11 +94,21 @@ export default function VerifyPage() {
       console.error('Error resending verification:', error)
       setStatus('error')
       setMessage('Error al reenviar el correo. Por favor intenta nuevamente.')
+    } finally {
+      setIsResending(false)
     }
-    setIsResending(false);
   }
 
   const renderContent = () => {
+    if (!isMounted) {
+      return (
+        <div className="text-center space-y-4">
+          <Loader2 className={`h-12 w-12 ${colors.primary.text[500]} animate-spin mx-auto`} />
+          <p className={`text-lg ${theme.light.foreground}`}>Cargando...</p>
+        </div>
+      )
+    }
+
     switch (status) {
       case 'loading':
         return (
@@ -103,7 +120,7 @@ export default function VerifyPage() {
       case 'success':
         return (
           <div className="text-center space-y-4">
-            <CheckCircle className={`h-12 w-8 ${colors.green[500]} mx-auto`} />
+            <CheckCircle className={`h-12 w-12 ${colors.green[500]} mx-auto`} />
             <h2 className={`text-2xl font-bold ${theme.light.foreground}`}>¡Verificación exitosa!</h2>
             <p className={colorCombos.secondaryText}>{message}</p>
           </div>
@@ -146,4 +163,27 @@ export default function VerifyPage() {
       </div>
     </div>
   )
+}
+
+// Main page component
+export default function VerifyPage() {
+  // Only render the client component on the client side
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white flex items-center justify-center p-4">
+        <div className={`w-full max-w-md ${theme.light.card} backdrop-blur-sm rounded-xl ${theme.light.border} p-8 shadow-xl text-center`}>
+          <Loader2 className={`h-12 w-12 ${colors.primary.text[500]} animate-spin mx-auto`} />
+          <p className={`mt-4 text-lg ${theme.light.foreground}`}>Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return <VerifyClient />
 }
