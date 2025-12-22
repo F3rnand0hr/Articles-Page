@@ -11,7 +11,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 export function UserNav() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
-  const [profile, setProfile] = useState<{ display_name: string } | null>(null)
+  const [profile, setProfile] = useState<{ display_name: string; avatar_url: string | null } | null>(null)
   const [loading, setLoading] = useState(true)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [remountKey, setRemountKey] = useState(0)
@@ -76,7 +76,7 @@ export function UserNav() {
       setUser(user)
 
       if (user) {
-        const { data: profileData } = await supabase.from("profiles").select("display_name").eq("id", user.id).single()
+        const { data: profileData } = await supabase.from("profiles").select("display_name, avatar_url").eq("id", user.id).single()
 
         setProfile(profileData)
       }
@@ -166,7 +166,15 @@ export function UserNav() {
           }
         }}
       >
-        <User className="h-4 w-4 mr-2" />
+        {profile?.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt={profile.display_name || "Usuario"}
+            className="h-6 w-6 mr-2 rounded-full object-cover"
+          />
+        ) : (
+          <User className="h-5 w-5 mr-2" />
+        )}
         {profile?.display_name || "Usuario"}
       </Button>
 

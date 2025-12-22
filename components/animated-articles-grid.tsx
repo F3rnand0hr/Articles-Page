@@ -61,7 +61,15 @@ export function AnimatedArticlesGrid({ articles }: { articles: any[] }) {
                         <CardContent className="mt-auto pt-0">
                             <div className={`flex items-center justify-between text-sm ${colorCombos.secondaryText}`}>
                                 <div className="flex items-center space-x-2">
-                                    <User className={`h-4 w-4 ${colorCombos.secondaryText}`} />
+                                    {article.article_authors[0]?.profiles?.avatar_url ? (
+                                      <img
+                                        src={article.article_authors[0].profiles.avatar_url}
+                                        alt={article.article_authors[0]?.profiles?.display_name || 'Autor'}
+                                        className="h-12 w-12 rounded-full object-cover"
+                                      />
+                                    ) : (
+                                      <User className={`h-5 w-5 ${colorCombos.secondaryText}`} />
+                                    )}
                                     <span className={colorCombos.secondaryText}>{article.article_authors[0]?.profiles?.display_name || 'Anónimo'}</span>
                                 </div>
                                 <div className="flex items-center space-x-4">

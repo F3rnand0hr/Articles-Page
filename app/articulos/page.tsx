@@ -145,11 +145,11 @@ export default async function ArticulosPage() {
                               <img
                                 src={profile.avatar_url}
                                 alt={profile.display_name || 'Autor'}
-                                className="h-8 w-8 rounded-full border-2 border-white"
+                                className="h-12 w-12 rounded-full border-2 border-white"
                               />
                             ) : (
-                              <div className={`h-8 w-8 rounded-full ${colors.white[200]} flex items-center justify-center`}>
-                                <User className={`h-4 w-4 ${colors.white.text[600]}`} />
+                              <div className={`h-12 w-12 rounded-full ${colors.white[200]} flex items-center justify-center`}>
+                                <User className={`h-6 w-6 ${colors.white.text[600]}`} />
                               </div>
                             )}
                           </div>

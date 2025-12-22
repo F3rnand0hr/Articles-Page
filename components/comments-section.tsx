@@ -19,6 +19,7 @@ interface Comment {
   parent_id: string | null
   profiles: {
     display_name: string
+    avatar_url: string | null
   }[]
   replies?: Comment[]
 }
@@ -31,6 +32,7 @@ interface CommentsSectionProps {
 export function CommentsSection({ articleId, initialCommentsCount }: CommentsSectionProps) {
   const [comments, setComments] = useState<Comment[]>([])
   const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [userProfile, setUserProfile] = useState<{ display_name: string; avatar_url: string | null } | null>(null)
   const [newComment, setNewComment] = useState("")
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyContent, setReplyContent] = useState("")
@@ -49,6 +51,15 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
       data: { user },
     } = await supabase.auth.getUser()
     setUser(user)
+    
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("id", user.id)
+        .single()
+      setUserProfile(profile)
+    }
   }
 
   const fetchComments = async () => {
@@ -62,7 +73,8 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
           author_id,
           parent_id,
           profiles!comments_author_id_fkey (
-            display_name
+            display_name,
+            avatar_url
           )
         `)
         .eq("article_id", articleId)
@@ -158,9 +170,17 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
       <Card className={`${theme.light.card} ${theme.light.border} mb-4`}>
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <User className="h-4 w-4 text-gray-500" />
-            </div>
+            {comment.profiles?.[0]?.avatar_url ? (
+              <img
+                src={comment.profiles[0].avatar_url}
+                alt={comment.profiles[0]?.display_name || "Usuario"}
+                className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="h-6 w-6 text-gray-500" />
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <span className={`font-medium ${theme.light.foreground}`}>
@@ -260,9 +280,17 @@ export function CommentsSection({ articleId, initialCommentsCount }: CommentsSec
         {user ? (
           <form onSubmit={handleSubmitComment} className="mb-8">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="h-4 w-4 text-gray-500" />
-              </div>
+              {userProfile?.avatar_url ? (
+                <img
+                  src={userProfile.avatar_url}
+                  alt={userProfile.display_name || "Usuario"}
+                  className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="h-6 w-6 text-gray-500" />
+                </div>
+              )}
               <div className="flex-1">
                 <Textarea
                   value={newComment}
