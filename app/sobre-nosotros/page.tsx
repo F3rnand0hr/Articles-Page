@@ -41,13 +41,13 @@ export default function SobreNosotrosPage() {
                     <div className="flex items-center justify-between h-16">
                         <Link href="/" className="flex items-center gap-2">
                             <Scale className={`h-8 w-8 ${colors.primary.text[700]}`} />
-                            <span className={`text-xl font-bold ${theme.light.foreground}`}>Derecho en Perspectiva</span>
+                            <span className={`text-xl font-bold ${colors.primary.text[800]} tracking-tight`}>Derecho en Perspectiva</span>
                         </Link>
                         <div className="hidden md:flex items-center gap-6">
                             <Link href="/articulos" className={colorCombos.navLink}>
                                 Artículos
                             </Link>
-                            <Link href="/sobre-nosotros" className={colorCombos.navLinkActive}>
+                            <Link href="/sobre-nosotros" className="text-[#6a2124] font-semibold border-b-2 border-[#6a2124] pb-1">
                                 Sobre Nosotros
                             </Link>
                             <UserNav />
@@ -61,8 +61,7 @@ export default function SobreNosotrosPage() {
                 <div className="text-center mb-16">
                     <h1 className={`text-4xl font-bold ${theme.light.foreground} mb-6`}>¿Quiénes Somos?</h1>
                     <p className={`text-xl ${colorCombos.secondaryText} max-w-3xl mx-auto leading-relaxed`}>
-                        Somos una asociación de leyes sub-graduadas comprometida con la educación jurídica y el análisis crítico del
-                        derecho contemporáneo.
+                        Derecho en Perspectiva es un blog jurídico en el que encontrarás opiniones respecto a las noticias nacionales más relevantes desde un punto de vista legal y crítico a efecto de entender mejor su impacto y fomentar una ciudadanía más consciente e informada.
                     </p>
                 </div>
 
@@ -71,13 +70,10 @@ export default function SobreNosotrosPage() {
                     <div>
                         <h2 className={`text-3xl font-bold ${theme.light.foreground} mb-6`}>Nuestra Misión</h2>
                         <p className={`${colorCombos.secondaryText} text-lg leading-relaxed mb-6`}>
-                            Democratizar el acceso al conocimiento jurídico a través de contenido de calidad, análisis profundo y
-                            discusiones constructivas que enriquezcan la comprensión del derecho en nuestra sociedad.
+                            Ofrecer análisis legales críticos y profundos sobre las noticias nacionales más relevantes, proporcionando perspectivas jurídicas que ayuden a entender mejor el impacto de los acontecimientos en nuestra sociedad.
                         </p>
                         <p className={`${colorCombos.secondaryText} text-lg leading-relaxed`}>
-                            Creemos que el derecho debe ser accesible y comprensible para todos, no solo para los profesionales del
-                            área. Por eso, nos esforzamos por crear contenido que sea tanto riguroso académicamente como accesible al
-                            público general.
+                            Creemos firmemente en el poder de la información y la educación jurídica para fomentar una ciudadanía más consciente e informada. Por eso, nos dedicamos a crear contenido riguroso que sea accesible tanto para profesionales del derecho como para el público general interesado en comprender el impacto legal de los eventos nacionales.
                         </p>
                     </div>
                     <div className="relative">
@@ -97,8 +93,8 @@ export default function SobreNosotrosPage() {
                     <div className="grid md:grid-cols-3 gap-8">
                         <Card className={`${colorCombos.darkCard} text-center`}>
                             <CardContent className="p-8">
-                                <div className={`w-16 h-16 ${colorCombos.iconBg.red} rounded-full flex items-center justify-center mx-auto mb-6`}>
-                                    <Target className={`h-8 w-8 ${colorCombos.icon.red}`} />
+                                <div className="w-16 h-16 bg-[#6a2124]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Target className="h-8 w-8 text-[#6a2124]" />
                                 </div>
                                 <h3 className={`text-xl font-semibold ${theme.light.foreground} mb-4`}>Excelencia Académica</h3>
                                 <p className={colorCombos.secondaryText}>
@@ -110,8 +106,8 @@ export default function SobreNosotrosPage() {
 
                         <Card className={`${colorCombos.darkCard} text-center`}>
                             <CardContent className="p-8">
-                                <div className={`w-16 h-16 ${colorCombos.iconBg.blue} rounded-full flex items-center justify-center mx-auto mb-6`}>
-                                    <Users className={`h-8 w-8 ${colorCombos.icon.blue}`} />
+                                <div className="w-16 h-16 bg-[#8a2d32]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Users className="h-8 w-8 text-[#8a2d32]" />
                                 </div>
                                 <h3 className={`text-xl font-semibold ${theme.light.foreground} mb-4`}>Comunidad Inclusiva</h3>
                                 <p className={colorCombos.secondaryText}>
@@ -122,8 +118,8 @@ export default function SobreNosotrosPage() {
 
                         <Card className={`${colorCombos.darkCard} text-center`}>
                             <CardContent className="p-8">
-                                <div className={`w-16 h-16 ${colorCombos.iconBg.green} rounded-full flex items-center justify-center mx-auto mb-6`}>
-                                    <BookOpen className={`h-8 w-8 ${colorCombos.icon.green}`} />
+                                <div className="w-16 h-16 bg-[#d4af37]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <BookOpen className="h-8 w-8 text-[#d4af37]" />
                                 </div>
                                 <h3 className={`text-xl font-semibold ${theme.light.foreground} mb-4`}>Acceso al Conocimiento</h3>
                                 <p className={colorCombos.secondaryText}>

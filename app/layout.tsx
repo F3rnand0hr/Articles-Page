@@ -6,6 +6,21 @@ import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 import { ClientLayout } from "./ClientLayout"
 
+// Import Google Fonts for professional typography
+import { Playfair_Display, Lora } from "next/font/google"
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  display: "swap",
+})
+
+const lora = Lora({
+  subsets: ["latin"],
+  variable: "--font-lora",
+  display: "swap",
+})
+
 export const metadata: Metadata = {
   title: "Derecho en Perspectiva - Plataforma Legal",
   description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
@@ -19,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="dark">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className={`font-serif ${GeistSans.variable} ${GeistMono.variable} ${playfair.variable} ${lora.variable}`}>
         <ClientLayout>
           {children}
         </ClientLayout>

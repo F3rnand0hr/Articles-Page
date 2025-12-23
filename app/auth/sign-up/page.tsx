@@ -4,6 +4,7 @@ import type React from "react"
 import { useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { colors, colorCombos, theme } from "@/lib/colors"
+import { validateEmail } from "@/lib/email-validation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -46,6 +47,17 @@ export default function SignUpPage() {
     setError(null)
     setIsLoading(true)
 
+    // Validate email before submitting
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.isValid) {
+      setError(emailValidation.error || "Por favor ingresa un correo electrónico válido")
+      setIsLoading(false)
+      return
+    }
+
+    // Use corrected email if available
+    const finalEmail = emailValidation.correctedEmail || email
+
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden")
       setIsLoading(false)
@@ -61,10 +73,16 @@ export default function SignUpPage() {
     const supabase = createClient()
 
     try {
+      // Get the current origin for the redirect URL
+      const redirectTo = typeof window !== 'undefined' 
+        ? `${window.location.origin}/auth/callback?type=signup`
+        : '/auth/callback?type=signup'
+
       const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
+        email: finalEmail,
         password,
         options: {
+          emailRedirectTo: redirectTo,
           data: {
             display_name: displayName,
           },
@@ -140,7 +158,22 @@ export default function SignUpPage() {
                   type="email"
                   placeholder="tucorreo@ejemplo.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value.toLowerCase().trim()
+                    setEmail(value)
+                    // Clear error when user starts typing
+                    if (error) setError(null)
+                  }}
+                  onBlur={(e) => {
+                    // Validate email on blur to catch typos early
+                    const value = e.target.value.trim()
+                    if (value) {
+                      const validation = validateEmail(value)
+                      if (!validation.isValid && validation.correctedEmail) {
+                        setError(validation.error || "")
+                      }
+                    }
+                  }}
                   onInvalid={(e) => e.currentTarget.setCustomValidity("Por favor completa este campo.")}
                   onInput={(e) => e.currentTarget.setCustomValidity("")}
                   className={`${theme.light.background} ${theme.light.border} ${theme.light.foreground} placeholder:${colorCombos.mutedText} focus:border-red-500 focus:ring-red-500`}

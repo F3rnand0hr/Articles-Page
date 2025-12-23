@@ -118,10 +118,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
               <Scale className={`h-8 w-8 ${colors.primary.text[700]}`} />
-              <span className={`text-xl font-bold ${theme.light.foreground}`}>Derecho en Perspectiva</span>
+              <span className={`text-xl font-bold ${colors.primary.text[800]} tracking-tight`}>Derecho en Perspectiva</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/articulos" className={`${colorCombos.navLinkActive}`}>
+              <Link href="/articulos" className="text-[#6a2124] font-semibold border-b-2 border-[#6a2124] pb-1">
                 Artículos
               </Link>
               <Link href="/sobre-nosotros" className={`${colorCombos.navLink}`}>
@@ -146,11 +146,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         {/* Article Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <Badge variant="secondary" className="bg-red-50 text-red-700 border-red-200 capitalize">
+            <Badge variant="secondary" className="bg-[#f9d9d9] text-[#6a2124] border-[#f3b3b3] border capitalize">
               {article.category}
             </Badge>
             {article.featured && (
-              <Badge variant="outline" className="border-yellow-300 text-yellow-700 bg-yellow-50">
+              <Badge variant="outline" className="bg-[#ffefc1] text-[#b8941f] border-[#ffefc1] border">
                 Destacado
               </Badge>
             )}

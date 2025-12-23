@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { colors, colorCombos, theme } from "@/lib/colors"
+import { checkRateLimit, peekRateLimit } from "@/lib/rate-limit"
 import { Button } from "@/components/ui/button"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 
@@ -15,21 +16,51 @@ function VerifyClient() {
   const [message, setMessage] = useState<string>('Verificando tu correo...')
   const [isResending, setIsResending] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [canResend, setCanResend] = useState(true)
+  const [resendMessage, setResendMessage] = useState<string | undefined>(undefined)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const token = searchParams.get('token')
   const type = searchParams.get('type') as VerificationType
   const email = searchParams.get('email')
+  const success = searchParams.get('success') === 'true'
 
   useEffect(() => {
     setIsMounted(true)
     
-    // Only run verification on the client side
-    if (typeof window !== 'undefined') {
-      verifyToken()
+    // If verification was successful via callback, show success immediately
+    if (success) {
+      setStatus('success')
+      setMessage('¡Correo verificado con éxito! Redirigiendo...')
+      setTimeout(() => {
+        if (type === 'recovery') {
+          router.push('/auth/login?message=password-reset')
+        } else {
+          router.push('/articulos')
+        }
+      }, 2000)
+      return
     }
-  }, []) // Empty dependency array means this runs once on mount
+    
+    // Only run verification on the client side if we have a token
+    if (typeof window !== 'undefined' && token) {
+      verifyToken()
+    } else if (!token && !success) {
+      // No token and not a success redirect - show error
+      setStatus('error')
+      setMessage('No se proporcionó un token de verificación.')
+    }
+    
+    // Check rate limit status when component mounts (without incrementing)
+    if (email) {
+      const rateLimitCheck = peekRateLimit(`email-resend-${email}`)
+      setCanResend(rateLimitCheck.isAllowed)
+      if (!rateLimitCheck.isAllowed) {
+        setResendMessage(rateLimitCheck.message)
+      }
+    }
+  }, [email, token, success, type, router]) // Check rate limit when email changes
 
   const verifyToken = async () => {
     if (!token) {
@@ -55,7 +86,7 @@ function VerifyClient() {
       // Redirect based on verification type
       setTimeout(() => {
         if (type === 'recovery') {
-          router.push('/auth/update-password')
+          router.push('/auth/login?message=password-reset')
         } else {
           router.push('/articulos')
         }
@@ -74,6 +105,14 @@ function VerifyClient() {
       return
     }
 
+    // Check rate limit before attempting to resend
+    const rateLimitCheck = checkRateLimit(`email-resend-${email}`)
+    if (!rateLimitCheck.isAllowed) {
+      setStatus('error')
+      setMessage(rateLimitCheck.message || 'Has excedido el límite de reintentos. Por favor espera antes de intentar nuevamente.')
+      return
+    }
+
     setIsResending(true)
     setStatus('loading')
     setMessage('Enviando correo de verificación...')
@@ -81,6 +120,7 @@ function VerifyClient() {
     const supabase = createClient()
 
     try {
+      // Supabase resend only accepts 'signup' or 'email_change', not 'recovery' or 'email'
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
@@ -88,8 +128,18 @@ function VerifyClient() {
 
       if (error) throw error
 
+      const remainingMessage = rateLimitCheck.remainingAttempts > 0 
+        ? ` (${rateLimitCheck.remainingAttempts} reintentos restantes)` 
+        : ''
       setStatus('success')
-      setMessage('¡Correo de verificación reenviado! Por favor revisa tu bandeja de entrada.')
+      setMessage(`¡Correo de verificación reenviado! Por favor revisa tu bandeja de entrada.${remainingMessage}`)
+      
+      // Update rate limit status after successful resend (peek only)
+      const newRateLimitCheck = peekRateLimit(`email-resend-${email}`)
+      setCanResend(newRateLimitCheck.isAllowed)
+      if (!newRateLimitCheck.isAllowed) {
+        setResendMessage(newRateLimitCheck.message)
+      }
     } catch (error) {
       console.error('Error resending verification:', error)
       setStatus('error')
@@ -137,10 +187,11 @@ function VerifyClient() {
             {email && (
               <Button
                 onClick={handleResend}
-                disabled={isResending}
+                disabled={isResending || !canResend}
                 className={`w-full ${colorCombos.primaryButton}`}
+                title={resendMessage}
               >
-                {isResending ? 'Enviando...' : 'Reenviar correo'}
+                {isResending ? 'Enviando...' : canResend ? 'Reenviar correo' : 'Límite de reintentos alcanzado'}
               </Button>
             )}
 

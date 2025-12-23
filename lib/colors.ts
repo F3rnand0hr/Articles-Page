@@ -1,27 +1,27 @@
 export const colors = {
-    // Primary brand colors
+    // Primary brand colors - Burgundy/Red (profesional y elegante)
     primary: {
         50: 'bg-[#fdf3f3]',
         100: 'bg-[#f9d9d9]',
         200: 'bg-[#f3b3b3]',
         300: 'bg-[#ed8d8d]',
         400: 'bg-[#e76666]',
-        500: 'bg-[#e04040]',
-        600: 'bg[#b33333]',
-        700: 'bg-[#8a2d32]',
-        800: 'bg[#632024]',
-        900: 'bg[#3d1416]',
+        500: 'bg-[#8a2d32]',
+        600: 'bg-[#7a272b]',
+        700: 'bg-[#6a2124]',
+        800: 'bg-[#5a1b1d]',
+        900: 'bg-[#4a1516]',
         text: {
             50: 'text-[#fdf3f3]',
             100: 'text-[#f9d9d9]',
             200: 'text-[#f3b3b3]',
             300: 'text-[#ed8d8d]',
             400: 'text-[#e76666]',
-            500: 'text-[#e04040]',
-            600: 'text-[#b33333]',
-            700: 'text-[#8a2d32]',
-            800: 'text-[#632024]',
-            900: 'text-[#3d1416]',
+            500: 'text-[#8a2d32]',
+            600: 'text-[#7a272b]',
+            700: 'text-[#6a2124]',
+            800: 'text-[#5a1b1d]',
+            900: 'text-[#4a1516]',
         },
         hover: {
             50: 'hover:bg-[#fdf3f3]',
@@ -29,11 +29,87 @@ export const colors = {
             200: 'hover:bg-[#f3b3b3]',
             300: 'hover:bg-[#ed8d8d]',
             400: 'hover:bg-[#e76666]',
-            500: 'hover:bg-[#e04040]',
-            600: 'hover:bg-[#b33333]',
-            700: 'hover:bg-[#8a2d32]',
-            800: 'hover:bg-[#632024]',
-            900: 'hover:bg-[#3d1416]',
+            500: 'hover:bg-[#8a2d32]',
+            600: 'hover:bg-[#7a272b]',
+            700: 'hover:bg-[#6a2124]',
+            800: 'hover:bg-[#5a1b1d]',
+            900: 'hover:bg-[#4a1516]',
+        }
+    },
+    
+    // Secondary brand colors - Navy Blue (complementario)
+    navy: {
+        50: 'bg-[#e6f0f5]',
+        100: 'bg-[#cce1eb]',
+        200: 'bg-[#99c3d7]',
+        300: 'bg-[#66a5c3]',
+        400: 'bg-[#3387af]',
+        500: 'bg-[#00699b]',
+        600: 'bg-[#005a87]',
+        700: 'bg-[#004b73]',
+        800: 'bg-[#003c5f]',
+        900: 'bg-[#002d4b]',
+        text: {
+            50: 'text-[#e6f0f5]',
+            100: 'text-[#cce1eb]',
+            200: 'text-[#99c3d7]',
+            300: 'text-[#66a5c3]',
+            400: 'text-[#3387af]',
+            500: 'text-[#00699b]',
+            600: 'text-[#005a87]',
+            700: 'text-[#004b73]',
+            800: 'text-[#003c5f]',
+            900: 'text-[#002d4b]',
+        },
+        hover: {
+            50: 'hover:bg-[#e6f0f5]',
+            100: 'hover:bg-[#cce1eb]',
+            200: 'hover:bg-[#99c3d7]',
+            300: 'hover:bg-[#66a5c3]',
+            400: 'hover:bg-[#3387af]',
+            500: 'hover:bg-[#00699b]',
+            600: 'hover:bg-[#005a87]',
+            700: 'hover:bg-[#004b73]',
+            800: 'hover:bg-[#003c5f]',
+            900: 'hover:bg-[#002d4b]',
+        }
+    },
+    
+    // Accent color - Gold (elegancia y prestigio)
+    gold: {
+        50: 'bg-[#fffbf0]',
+        100: 'bg-[#fff7e0]',
+        200: 'bg-[#ffefc1]',
+        300: 'bg-[#ffe7a2]',
+        400: 'bg-[#ffdf83]',
+        500: 'bg-[#d4af37]',
+        600: 'bg-[#b8941f]',
+        700: 'bg-[#9c7a07]',
+        800: 'bg-[#806000]',
+        900: 'bg-[#644600]',
+        text: {
+            50: 'text-[#fffbf0]',
+            100: 'text-[#fff7e0]',
+            200: 'text-[#ffefc1]',
+            300: 'text-[#ffe7a2]',
+            400: 'text-[#ffdf83]',
+            500: 'text-[#d4af37]',
+            600: 'text-[#b8941f]',
+            700: 'text-[#9c7a07]',
+            800: 'text-[#806000]',
+            900: 'text-[#644600]',
+        },
+        hover: {
+            50: 'hover:bg-[#fffbf0]',
+            100: 'hover:bg-[#fff7e0]',
+            200: 'hover:bg-[#ffefc1]',
+            300: 'hover:bg-[#ffe7a2]',
+            400: 'hover:bg-[#ffdf83]',
+            500: 'hover:bg-[#d4af37]',
+            600: 'hover:bg-[#b8941f]',
+            700: 'hover:bg-[#9c7a07]',
+            800: 'hover:bg-[#806000]',
+            900: 'hover:bg-[#644600]',
         }
     },
 
@@ -191,21 +267,21 @@ export const colors = {
 
 // Common color combinations for consistency
 export const colorCombos = {
-    // Primary button
-    primaryButton: `${colors.primary[600]} ${colors.primary.hover[700]} text-white`,
+    // Primary button - Burgundy/Red
+    primaryButton: `${colors.primary[700]} ${colors.primary.hover[800]} text-white font-semibold`,
 
-    // Secondary button (outline)
-    secondaryButton: `border-gray-600 text-gray-700 hover:bg-gray-50 bg-transparent`,
+    // Secondary button (outline) - Navy blue accent
+    secondaryButton: `border-2 ${colors.navy.text[700]} ${colors.navy.text[700]} hover:${colors.navy[50]} bg-transparent`,
 
     // Card backgrounds
-    lightCard: 'bg-white border-gray-200',
-    lightCardHover: 'hover:bg-gray-50',
-    darkCard: 'bg-white border-gray-200',
-    darkCardHover: 'hover:bg-gray-50',
+    lightCard: 'bg-white border-gray-200 shadow-sm',
+    lightCardHover: 'hover:bg-gray-50 hover:shadow-md transition-all',
+    darkCard: 'bg-white border-gray-200 shadow-sm',
+    darkCardHover: 'hover:bg-gray-50 hover:shadow-md transition-all',
 
-    // Navigation
-    navLink: 'text-gray-600 hover:text-red-600',
-    navLinkActive: 'text-red-700 font-medium',
+    // Navigation - Burgundy/Red primary
+    navLink: `text-gray-700 hover:text-[#6a2124] transition-colors`,
+    navLinkActive: `text-[#6a2124] font-semibold border-b-2 border-[#6a2124] pb-1`,
 
     // Text colors
     primaryText: 'text-gray-900',
@@ -214,16 +290,16 @@ export const colorCombos = {
 
     // Icon backgrounds with opacity
     iconBg: {
-        red: 'bg-red-500/20',
-        blue: 'bg-blue-500/20',
-        green: 'bg-green-500/20',
+        red: `${colors.primary[500]}/20`,
+        navy: `${colors.navy[500]}/20`,
+        gold: `${colors.gold[500]}/20`,
     },
 
     // Icon colors
     icon: {
-        red: 'text-red-500',
-        blue: 'text-blue-500',
-        green: 'text-green-500',
+        red: colors.primary.text[700],
+        navy: colors.navy.text[700],
+        gold: colors.gold.text[600],
     }
 }
 

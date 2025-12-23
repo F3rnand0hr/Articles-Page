@@ -25,7 +25,10 @@ export function AuthorSection({ primaryName, extraCount, authors }: AuthorSectio
         <>
             <button
                 type="button"
-                onClick={() => setOpen(true)}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    setOpen(true)
+                }}
                 className={`text-left text-sm ${colorCombos.secondaryText} underline-offset-2 hover:underline`}
             >
                 Por {primaryName || "Autor"}

@@ -4,13 +4,15 @@ import { useEffect, useState } from "react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Scale, BookOpen, Users, MessageCircle, LogOut, Instagram, Linkedin, X } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Scale, BookOpen, Users, MessageCircle, LogOut, X, Calendar, User } from "lucide-react"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { motion, Variants } from "framer-motion"
+import { AuthorSection } from "@/components/author-section"
 
 const container: Variants = {
   hidden: { opacity: 0 },
@@ -34,10 +36,34 @@ const item: Variants = {
   }
 }
 
+type Profile = {
+  id: string
+  display_name: string | null
+  bio: string | null
+  avatar_url: string | null
+}
+
+type ArticleResponse = {
+  id: string
+  title: string
+  excerpt: string
+  category: string
+  featured: boolean
+  likes_count: number
+  comments_count: number
+  created_at: string
+  article_authors: Array<{
+    is_primary_author: boolean
+    profiles: Profile
+  }>
+}
+
 export default function HomePage() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [articles, setArticles] = useState<ArticleResponse[]>([])
+  const [articlesLoading, setArticlesLoading] = useState(true)
   const supabase = createClient()
   const router = useRouter()
 
@@ -59,6 +85,52 @@ export default function HomePage() {
     void checkUser()
   }, [supabase])
 
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('articles')
+          .select(`
+            id,
+            title,
+            excerpt,
+            category,
+            featured,
+            likes_count,
+            comments_count,
+            created_at,
+            article_authors(
+              is_primary_author,
+              profiles(
+                id,
+                display_name,
+                bio,
+                avatar_url
+              )
+            )
+          `)
+          .eq("published", true)
+          .order("created_at", { ascending: false })
+          .limit(4) // Get first 4 articles (1 featured + 3 regular)
+
+        if (error) {
+          console.error("Error fetching articles:", error)
+        } else {
+          setArticles((data || []) as unknown as ArticleResponse[])
+        }
+      } catch (error) {
+        console.error("Error fetching articles:", error)
+      } finally {
+        setArticlesLoading(false)
+      }
+    }
+
+    void fetchArticles()
+  }, [supabase])
+
+  const featuredArticles = articles.filter((article) => article.featured)
+  const regularArticles = articles.filter((article) => !article.featured).slice(0, 3)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
       {/* Navigation */}
@@ -67,7 +139,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <Scale className={`h-8 w-8 ${colors.primary.text[700]}`} />
-              <span className={`text-xl font-bold ${theme.light.foreground}`}>
+              <span className={`text-xl font-bold ${colors.primary.text[800]} tracking-tight`}>
                 Derecho en Perspectiva
               </span>
             </div>
@@ -91,32 +163,15 @@ export default function HomePage() {
             {/* Left Content */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <h1 className={`text-5xl lg:text-6xl font-bold ${theme.light.foreground} leading-tight text-balance`}>
+                <h1 className={`text-5xl lg:text-6xl font-bold ${colors.primary.text[800]} leading-tight text-balance`}>
                   Derecho en
                   <span className={`block ${colors.primary.text[700]}`}>Perspectiva</span>
                 </h1>
                 <p className={`text-xl ${colorCombos.secondaryText} leading-relaxed text-pretty`}>
-                  Bienvenido a nuestra plataforma de contenido legal. Explora artículos especializados, participa en
-                  discusiones jurídicas y mantente actualizado con las últimas perspectivas del derecho.
+                  Un blog jurídico donde encontrarás opiniones sobre las noticias nacionales más relevantes desde un punto de vista legal y crítico, para entender mejor su impacto y fomentar una ciudadanía más consciente e informada.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/articulos">
-                  <Button size="lg" className={colorCombos.primaryButton}>
-                    Explorar Revista
-                  </Button>
-                </Link>
-                <Link href="/articulos">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className={colorCombos.secondaryButton}
-                  >
-                    Ver Artículos
-                  </Button>
-                </Link>
-              </div>
             </div>
 
             {/* Right Image */}
@@ -132,8 +187,8 @@ export default function HomePage() {
                 />
               </div>
               {/* Decorative elements */}
-              <div className={`absolute -top-4 -right-4 w-24 h-24 ${colors.primary[500]}/20 rounded-full blur-xl`}></div>
-              <div className={`absolute -bottom-4 -left-4 w-32 h-32 ${colors.blue[500]}/10 rounded-full blur-xl`}></div>
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#8a2d32]/20 rounded-full blur-xl"></div>
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#00699b]/10 rounded-full blur-xl"></div>
             </div>
           </div>
         </div>
@@ -148,73 +203,138 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Featured Article */}
-              <div className="md:col-span-2 lg:col-span-2">
-                <Link href="/articulos/1" className="group block h-full">
-                  <div className={`h-full rounded-2xl overflow-hidden shadow-lg ${colorCombos.lightCard} group-hover:shadow-xl transition-shadow duration-300`}>
-                    <div className="relative pt-[56.25%] bg-gray-100 overflow-hidden">
-                      <img
-                        src="/law-article.jpg"
-                        alt="Artículo destacado"
-                        className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 p-6 text-white">
-                        <span className="inline-block px-3 py-1 text-sm font-medium bg-white/20 backdrop-blur-sm rounded-full mb-2">
-                          Derecho Civil
-                        </span>
-                        <h3 className="text-2xl font-bold leading-tight mb-2 line-clamp-2">
-                          Análisis de las últimas reformas al Código Civil
-                        </h3>
-                        <p className="text-sm text-gray-200 line-clamp-2">
-                          Un examen detallado de los cambios recientes y su impacto en los derechos de propiedad y contratos.
-                        </p>
+            {articlesLoading ? (
+              <div className="text-center py-12">
+                <p className={colorCombos.secondaryText}>Cargando artículos...</p>
+              </div>
+            ) : articles.length === 0 ? (
+              <div className="text-center py-12">
+                <p className={colorCombos.secondaryText}>No hay artículos disponibles</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center max-w-5xl mx-auto">
+                {/* Featured Article */}
+                {featuredArticles.length > 0 && (
+                  <div className="w-full max-w-md">
+                    <Link href={`/articulos/${featuredArticles[0].id}`} className="group block h-full">
+                      <div className={`h-full rounded-2xl overflow-hidden shadow-lg ${theme.light.card} ${theme.light.border} border group-hover:shadow-xl transition-shadow duration-300`}>
+                        <div className="p-6">
+                          <div className="flex items-center gap-3 mb-4 flex-wrap">
+                            <Badge variant="secondary" className="bg-[#f9d9d9] text-[#6a2124] border-[#f3b3b3] border capitalize">
+                              Vol. 1
+                            </Badge>
+                            <Badge variant="outline" className="bg-[#ffefc1] text-[#b8941f] border-[#ffefc1] border">
+                              Destacado
+                            </Badge>
+                          </div>
+                          <h3 className={`text-2xl font-bold ${theme.light.foreground} mb-3 line-clamp-2 group-hover:text-[#6a2124] transition-colors`}>
+                            {featuredArticles[0].title}
+                          </h3>
+                          <p className={`${colorCombos.secondaryText} mb-4 line-clamp-3`}>
+                            {featuredArticles[0].excerpt}
+                          </p>
+                          {(() => {
+                            const sortedAuthors = featuredArticles[0].article_authors
+                              .sort((a, b) => (a.is_primary_author === b.is_primary_author ? 0 : a.is_primary_author ? -1 : 1))
+                              .map(author => author.profiles)
+                            
+                            return (
+                              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                  <div className="flex -space-x-2">
+                                    {sortedAuthors.slice(0, 3).map((profile) => (
+                                      <div key={profile.id} className="relative group">
+                                        {profile.avatar_url ? (
+                                          <img
+                                            src={profile.avatar_url}
+                                            alt={profile.display_name || 'Autor'}
+                                            className="h-8 w-8 rounded-full border-2 border-white shadow-sm object-cover"
+                                          />
+                                        ) : (
+                                          <div className={`h-8 w-8 rounded-full ${colors.white[200]} flex items-center justify-center border-2 border-white`}>
+                                            <User className={`h-4 w-4 ${colors.white.text[600]}`} />
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <AuthorSection
+                                    primaryName={sortedAuthors[0]?.display_name || null}
+                                    extraCount={sortedAuthors.length > 1 ? sortedAuthors.length - 1 : 0}
+                                    authors={sortedAuthors}
+                                  />
+                                </div>
+                              </div>
+                            )
+                          })()}
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
-                </Link>
-              </div>
+                )}
 
-              {/* Secondary Articles */}
-              <div className="space-y-6">
-                {[1, 2, 3].map((item) => (
-                  <Link key={item} href={`/articulos/${item + 1}`} className="group block">
-                    <div className={`flex gap-4 p-4 rounded-xl ${colorCombos.lightCard} group-hover:bg-gray-50 transition-colors`}>
-                      <div className="flex-shrink-0 w-24 h-24 rounded-lg bg-gray-200 overflow-hidden">
-                        <img
-                          src={`/article-${item}.jpg`}
-                          alt={`Artículo ${item}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                {/* Secondary Articles */}
+                {regularArticles.map((article) => {
+                  const sortedAuthors = article.article_authors
+                    .sort((a, b) => (a.is_primary_author === b.is_primary_author ? 0 : a.is_primary_author ? -1 : 1))
+                    .map(author => author.profiles)
+
+                  return (
+                    <Link key={article.id} href={`/articulos/${article.id}`} className="group block w-full max-w-md">
+                      <div className={`h-full rounded-xl overflow-hidden shadow-md ${theme.light.card} ${theme.light.border} border group-hover:shadow-lg group-hover:bg-gray-50 transition-all duration-300`}>
+                        <div className="p-6 h-full flex flex-col">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Badge variant="secondary" className="text-xs bg-[#f9d9d9] text-[#6a2124] border-[#f3b3b3] border capitalize">
+                              Vol. 1
+                            </Badge>
+                            {article.featured && (
+                              <Badge variant="outline" className="text-xs bg-[#ffefc1] text-[#b8941f] border-[#ffefc1] border">
+                                Destacado
+                              </Badge>
+                            )}
+                          </div>
+                          <h4 className={`font-bold text-lg ${theme.light.foreground} group-hover:text-[#6a2124] transition-colors line-clamp-2 mb-3 flex-grow`}>
+                            {article.title}
+                          </h4>
+                          <p className={`text-sm ${colorCombos.secondaryText} line-clamp-3 mb-4`}>
+                            {article.excerpt}
+                          </p>
+                          <div className="flex items-center gap-2 mt-auto pt-4 border-t border-gray-200" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex -space-x-1">
+                              {sortedAuthors.slice(0, 2).map((profile) => (
+                                profile.avatar_url ? (
+                                  <img
+                                    key={profile.id}
+                                    src={profile.avatar_url}
+                                    alt={profile.display_name || 'Autor'}
+                                    className="h-6 w-6 rounded-full border border-white object-cover"
+                                  />
+                                ) : (
+                                  <div key={profile.id} className={`h-6 w-6 rounded-full ${colors.white[200]} flex items-center justify-center border border-white`}>
+                                    <User className={`h-3 w-3 ${colors.white.text[600]}`} />
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                            <AuthorSection
+                              primaryName={sortedAuthors[0]?.display_name || null}
+                              extraCount={sortedAuthors.length > 1 ? sortedAuthors.length - 1 : 0}
+                              authors={sortedAuthors}
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className={`font-medium ${theme.light.foreground} group-hover:${colors.primary[600]} transition-colors line-clamp-2`}>
-                          {[
-                            "Derechos humanos en la era digital",
-                            "Novedades en derecho laboral 2023",
-                            "La justicia restaurativa en el sistema penal"
-                          ][item - 1]}
-                        </h4>
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                          {[
-                            "Explorando los desafíos legales de la privacidad y protección de datos.",
-                            "Lo que necesitas saber sobre las nuevas regulaciones laborales.",
-                            "Un enfoque alternativo para la resolución de conflictos penales."
-                          ][item - 1]}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  )
+                })}
               </div>
-            </div>
+            )}
 
             <div className="mt-12 text-center">
               <Link href="/articulos">
                 <Button
                   variant="outline"
-                  className={`${colorCombos.secondaryButton} border ${theme.light.border} hover:${colors.primary[50]} transition-colors`}
+                  className={`${colorCombos.secondaryButton} border ${theme.light.border} hover:bg-[#e6f0f5] transition-colors`}
                 >
                   Ver todos los artículos
                 </Button>
@@ -244,11 +364,11 @@ export default function HomePage() {
               <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors h-full`}>
                 <CardContent className="p-6 text-center space-y-4">
                   <motion.div
-                    className={`w-12 h-12 ${colorCombos.iconBg.red} rounded-lg flex items-center justify-center mx-auto`}
+                    className="w-12 h-12 bg-[#6a2124]/10 rounded-lg flex items-center justify-center mx-auto"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <BookOpen className={`h-6 w-6 ${colorCombos.icon.red}`} />
+                    <BookOpen className="h-6 w-6 text-[#6a2124]" />
                   </motion.div>
                   <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Artículos Especializados</h3>
                   <p className={colorCombos.secondaryText}>Contenido legal de alta calidad cubriendo todas las ramas del derecho</p>
@@ -260,11 +380,11 @@ export default function HomePage() {
               <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors h-full`}>
                 <CardContent className="p-6 text-center space-y-4">
                   <motion.div
-                    className={`w-12 h-12 ${colorCombos.iconBg.blue} rounded-lg flex items-center justify-center mx-auto`}
+                    className="w-12 h-12 bg-[#8a2d32]/10 rounded-lg flex items-center justify-center mx-auto"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <MessageCircle className={`h-6 w-6 ${colorCombos.icon.blue}`} />
+                    <MessageCircle className="h-6 w-6 text-[#8a2d32]" />
                   </motion.div>
                   <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Discusiones Activas</h3>
                   <p className={colorCombos.secondaryText}>Participa en debates jurídicos con profesionales y estudiantes</p>
@@ -276,11 +396,11 @@ export default function HomePage() {
               <Card className={`${colorCombos.darkCard} ${colorCombos.darkCardHover} transition-colors h-full`}>
                 <CardContent className="p-6 text-center space-y-4">
                   <motion.div
-                    className={`w-12 h-12 ${colorCombos.iconBg.green} rounded-lg flex items-center justify-center mx-auto`}
+                    className="w-12 h-12 bg-[#d4af37]/10 rounded-lg flex items-center justify-center mx-auto"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Users className={`h-6 w-6 ${colorCombos.icon.green}`} />
+                    <Users className="h-6 w-6 text-[#d4af37]" />
                   </motion.div>
                   <h3 className={`text-xl font-semibold ${theme.light.foreground}`}>Comunidad Legal</h3>
                   <p className={colorCombos.secondaryText}>Conecta con expertos y colegas del ámbito jurídico</p>
@@ -382,40 +502,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className={`${colors.white[50]} ${theme.light.border} border-t`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Scale className={`h-6 w-6 ${colors.primary.text[700]}`} />
-              <span className={`${theme.light.foreground} font-semibold`}>Derecho en Perspectiva</span>
-            </div>
-            <div className="flex items-center gap-6">
-              <p className={`${colorCombos.secondaryText} text-sm`}> 2024 Derecho en Perspectiva. Todos los derechos reservados.</p>
-              <div className="flex items-center gap-4">
-                <a
-                  href="https://www.instagram.com/derechoenperspectiva"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${colorCombos.secondaryText} hover:${colors.primary.text[500]} transition-colors`}
-                  aria-label="Instagram"
-                >
-                  <Instagram className="h-5 w-5" />
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/derecho-en-perspectiva"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${colorCombos.secondaryText} hover:text-[#0A66C2] transition-colors`}
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-5 w-5" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
