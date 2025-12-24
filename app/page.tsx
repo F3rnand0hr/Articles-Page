@@ -172,7 +172,7 @@ export default function HomePage() {
                 </p>
                 <div className={`space-y-3 ${colorCombos.mutedText}`}>
                   <p className={`text-lg leading-relaxed`}>
-                    Somos un equipo de estudiantes de la Universidad de Puerto Rico, Recinto de Mayagüez, comprometidos con el análisis jurídico y la educación legal.
+                    Somos un equipo de estudiantes de la Universidad de Puerto Rico, Recinto de Mayagüez.
                   </p>
                   
                 </div>
