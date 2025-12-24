@@ -222,7 +222,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                       {author.avatar_url ? (
                         <img
                           src={author.avatar_url}
-                          alt={author.display_name || 'Autor'}
+                          alt={author.display_name || 'Escritor Invitado'}
                           className="h-12 w-12 rounded-full border-2 border-white shadow-sm object-cover"
                         />
                       ) : (
@@ -231,7 +231,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                         </div>
                       )}
                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        {author.display_name || 'Autor'}
+                        {author.display_name || 'Escritor Invitado'}
                       </div>
                     </div>
                   ))}
@@ -304,7 +304,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   {author.avatar_url ? (
                     <img
                       src={author.avatar_url}
-                      alt={author.display_name || 'Autor'}
+                      alt={author.display_name || 'Escritor Invitado'}
                       className="h-12 w-12 rounded-full border-2 border-white shadow-sm"
                     />
                   ) : (
@@ -313,7 +313,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                     </div>
                   )}
                   <div>
-                    <h4 className={`font-medium ${theme.light.foreground}`}>{author.display_name || 'Autor'}</h4>
+                    <h4 className={`font-medium ${theme.light.foreground}`}>{author.display_name || 'Escritor Invitado'}</h4>
                     {author.bio && <p className={`${colorCombos.secondaryText} text-sm mt-1`}>{author.bio}</p>}
                   </div>
                 </div>

@@ -31,7 +31,7 @@ export function AuthorSection({ primaryName, extraCount, authors }: AuthorSectio
                 }}
                 className={`text-left text-sm ${colorCombos.secondaryText} underline-offset-2 hover:underline`}
             >
-                Por {primaryName || "Autor"}
+                Por {primaryName || "Escritor Invitado"}
                 {extraCount > 0 && ` y ${extraCount} más`}
             </button>
 
@@ -57,7 +57,7 @@ export function AuthorSection({ primaryName, extraCount, authors }: AuthorSectio
                                             {author.avatar_url ? (
                                                 <img
                                                     src={author.avatar_url}
-                                                    alt={author.display_name || "Autor"}
+                                                    alt={author.display_name || "Escritor Invitado"}
                                                     className="h-32 w-32 sm:h-40 sm:w-40 rounded-full border-2 border-white shadow-sm flex-shrink-0 object-cover"
                                                 />
                                             ) : (
@@ -67,7 +67,7 @@ export function AuthorSection({ primaryName, extraCount, authors }: AuthorSectio
                                             )}
                                             <div className="text-center sm:text-left">
                                                 <h4 className={`font-medium ${theme.light.foreground}`}>
-                                                    {author.display_name || "Autor"}
+                                                    {author.display_name || "Escritor Invitado"}
                                                 </h4>
                                                 {author.bio && (
                                                     <div className={`${colorCombos.secondaryText} text-sm mt-1`}>

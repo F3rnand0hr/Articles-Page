@@ -168,8 +168,14 @@ export default function HomePage() {
                   <span className={`block ${colors.primary.text[700]}`}>Perspectiva</span>
                 </h1>
                 <p className={`text-xl ${colorCombos.secondaryText} leading-relaxed text-pretty`}>
-                  Una revista jurídica digital donde encontrarás artículos sobre las noticias nacionales más relevantes desde un punto de vista legal y crítico, para entender mejor su impacto y fomentar una ciudadanía más consciente e informada.
+                  Una revista jurídica digital donde encontrarás artículos sobre las noticias nacionales más relevantes desde un punto de vista legal y crítico, para entender mejor su impacto y fomentar una comunidad colegial más consciente e informada.
                 </p>
+                <div className={`space-y-3 ${colorCombos.mutedText}`}>
+                  <p className={`text-lg leading-relaxed`}>
+                    Somos un equipo de estudiantes de la Universidad de Puerto Rico, Recinto de Mayagüez, comprometidos con el análisis jurídico y la educación legal.
+                  </p>
+                  
+                </div>
               </div>
 
             </div>
@@ -247,7 +253,7 @@ export default function HomePage() {
                                         {profile.avatar_url ? (
                                           <img
                                             src={profile.avatar_url}
-                                            alt={profile.display_name || 'Autor'}
+                                            alt={profile.display_name || 'Escritor Invitado'}
                                             className="h-8 w-8 rounded-full border-2 border-white shadow-sm object-cover"
                                           />
                                         ) : (
@@ -306,7 +312,7 @@ export default function HomePage() {
                                   <img
                                     key={profile.id}
                                     src={profile.avatar_url}
-                                    alt={profile.display_name || 'Autor'}
+                                    alt={profile.display_name || 'Escritor Invitado'}
                                     className="h-6 w-6 rounded-full border border-white object-cover"
                                   />
                                 ) : (
@@ -342,6 +348,28 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* CTA Section - hidden when user is logged in */}
+        {!loading && !user && (
+          <div className={`${colors.white[200]} ${theme.light.border} border-t`}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center space-y-6">
+                <h2 className={`text-3xl font-bold ${theme.light.foreground}`}>
+                  Únete a Nuestra Comunidad
+                </h2>
+                <p className={`${colorCombos.secondaryText} text-lg max-w-2xl mx-auto`}>
+                  Regístrate para acceder a contenido exclusivo, participar en discusiones y conectar con profesionales
+                  del derecho
+                </p>
+                <Link href="/auth/sign-up">
+                  <Button size="lg" className={colorCombos.primaryButton}>
+                    Crear Cuenta Gratuita
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Features Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -411,27 +439,6 @@ export default function HomePage() {
         </div>
 
 
-        {/* CTA Section - hidden when user is logged in */}
-        {!loading && !user && (
-          <div className={`${colors.white[200]} ${theme.light.border} border-t`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-              <div className="text-center space-y-6">
-                <h2 className={`text-3xl font-bold ${theme.light.foreground}`}>
-                  Únete a Nuestra Comunidad
-                </h2>
-                <p className={`${colorCombos.secondaryText} text-lg max-w-2xl mx-auto`}>
-                  Regístrate para acceder a contenido exclusivo, participar en discusiones y conectar con profesionales
-                  del derecho
-                </p>
-                <Link href="/auth/sign-up">
-                  <Button size="lg" className={colorCombos.primaryButton}>
-                    Crear Cuenta Gratuita
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Image Modal */}

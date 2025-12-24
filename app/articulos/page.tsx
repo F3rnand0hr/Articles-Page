@@ -154,7 +154,7 @@ export default async function ArticulosPage() {
                             {profile.avatar_url ? (
                               <img
                                 src={profile.avatar_url}
-                                alt={profile.display_name || 'Autor'}
+                                alt={profile.display_name || 'Escritor Invitado'}
                                 className="h-10 w-10 rounded-full border-2 border-white shadow-sm object-cover"
                               />
                             ) : (
@@ -163,7 +163,7 @@ export default async function ArticulosPage() {
                               </div>
                             )}
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                              {profile.display_name || 'Autor'}
+                              {profile.display_name || 'Escritor Invitado'}
                             </div>
                           </div>
                         ))}
