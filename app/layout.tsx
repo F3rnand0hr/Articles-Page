@@ -25,6 +25,17 @@ export const metadata: Metadata = {
   title: "Derecho en Perspectiva - Plataforma Legal",
   description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
   generator: "v0.app",
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
+      { url: "/icon.jpg", type: "image/jpeg" },
+    ],
+    apple: [
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({

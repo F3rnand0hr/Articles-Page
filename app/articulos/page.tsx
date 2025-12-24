@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Scale, Heart, Calendar, User } from "lucide-react"
 import { AnimatedArticlesGrid } from "@/components/animated-articles-grid"
 import { AuthorSection } from "@/components/author-section"
+import { ShareButton } from "@/components/share-button"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
@@ -183,11 +184,20 @@ export default async function ArticulosPage() {
                   )
                 })()}
               </div>
-              <Link href={`/articulos/${featuredArticles[0].id}`}>
-                <Button className={colorCombos.primaryButton}>
-                  Leer más
-                </Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link href={`/articulos/${featuredArticles[0].id}`}>
+                  <Button className={colorCombos.primaryButton}>
+                    Leer más
+                  </Button>
+                </Link>
+                <ShareButton
+                  articleId={featuredArticles[0].id}
+                  articleTitle={featuredArticles[0].title}
+                  variant="outline"
+                  size="default"
+                  iconOnly={true}
+                />
+              </div>
             </div>
           </div>
         )}

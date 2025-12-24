@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Scale, MessageCircle, Calendar, User, ArrowLeft } from "lucide-react"
 import { UserNav } from "@/components/user-nav"
 import { LikeButton } from "@/components/like-button"
+import { ShareButton } from "@/components/share-button"
 import { CommentsSection } from "@/components/comments-section"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -221,6 +222,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             articleId={article.id}
             initialLikesCount={actualLikesCount}
             initialIsLiked={isLiked}
+          />
+          <ShareButton
+            articleId={article.id}
+            articleTitle={article.title}
           />
           {/* <Button
             variant="outline"

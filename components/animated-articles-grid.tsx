@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Scale, Heart, Calendar, User } from "lucide-react"
+import { ShareButton } from "@/components/share-button"
 import Link from "next/link"
 import { colors, colorCombos, theme } from "@/lib/colors"
 import { AuthorSection } from "@/components/author-section"
@@ -108,12 +109,19 @@ export function AnimatedArticlesGrid({ articles }: { articles: any[] }) {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex justify-end">
+                                <div className="flex justify-end items-center gap-2">
                                     <Button asChild variant="outline" size="sm" className={`${colorCombos.icon} hover:opacity-90`}>
                                         <Link href={`/articulos/${article.id}`}>
                                             Leer más
                                         </Link>
                                     </Button>
+                                    <ShareButton
+                                        articleId={article.id}
+                                        articleTitle={article.title}
+                                        variant="outline"
+                                        size="sm"
+                                        iconOnly={true}
+                                    />
                                 </div>
                             </CardContent>
                         </Card>

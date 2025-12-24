@@ -22,50 +22,43 @@ export function UserNav() {
   useEffect(() => {
     checkUser()
 
-    // Debug click events
-    const handleGlobalClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target?.closest && target.closest('#sign-out-button')) {
-        console.log('Global click caught on sign out button')
-      }
-    }
-
-    document.addEventListener('click', handleGlobalClick, true)
-
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event)
       if (event === 'SIGNED_OUT') {
-        console.log('Auth: User signed out')
         setUser(null)
         setProfile(null)
         setDropdownOpen(false)
       } else if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        console.log('Auth: User signed in or initial session')
         checkUser()
       }
     })
 
     return () => {
-      document.removeEventListener('click', handleGlobalClick, true)
       subscription?.unsubscribe()
     }
   }, [])
 
   useEffect(() => {
+    if (!dropdownOpen) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       const dropdown = document.getElementById('user-dropdown');
-      const button = event.target as HTMLElement;
+      const button = document.querySelector('[data-user-nav-button]');
+      const target = event.target as HTMLElement;
 
-      if (dropdown && !dropdown.contains(button) && !button.closest('button')) {
-        dropdown.classList.add('hidden');
+      if (target?.closest('#sign-out-button') || target?.closest('#user-dropdown')) {
+        return;
+      }
+
+      if (dropdown && button && !dropdown.contains(target) && !button.contains(target)) {
         setDropdownOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [])
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  }, [dropdownOpen])
 
   const checkUser = async () => {
     try {
@@ -124,7 +117,7 @@ export function UserNav() {
           <Button
             variant="outline"
             size="sm"
-            className={`${colorCombos.secondaryButton}`}
+            className={`${colors.primary.text[600]} border ${theme.light.border} hover:bg-[#e6f0f5] transition-colors`}
           >
             Iniciar Sesión
           </Button>
@@ -144,26 +137,14 @@ export function UserNav() {
     <div
       key={remountKey}
       className="relative"
-      onClickCapture={(e) => {
-        const target = e.target as HTMLElement
-        if (target?.closest && target.closest('#sign-out-button')) {
-          e.preventDefault()
-          e.stopPropagation()
-          console.log('Capture: sign out clicked')
-          handleSignOut()
-        }
-      }}
     >
       <Button
         variant="outline"
         size="sm"
         className={`${colorCombos.secondaryButton}`}
+        data-user-nav-button
         onClick={() => {
-          const dropdown = document.getElementById('user-dropdown');
-          if (dropdown) {
-            dropdown.classList.toggle('hidden');
-            setDropdownOpen(!dropdownOpen);
-          }
+          setDropdownOpen(!dropdownOpen);
         }}
       >
         {profile?.avatar_url ? (
@@ -180,16 +161,26 @@ export function UserNav() {
 
       <div
         id="user-dropdown"
-        className={`absolute right-0 top-full mt-2 w-56 ${theme.light.card} ${theme.light.border} z-50 shadow-lg border-2 rounded-md hidden`}
+        className={`absolute right-0 top-full mt-2 w-56 ${theme.light.card} ${theme.light.border} z-50 shadow-lg border-2 rounded-md ${dropdownOpen ? '' : 'hidden'}`}
       >
         <div className="p-2">
           <button
             id="sign-out-button"
             type="button"
-            className={`w-full justify-start px-3 py-2 rounded ${theme.light.foreground} hover:bg-npgray-100 flex items-center gap-2`}
+            onClick={async (e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setDropdownOpen(false)
+              await handleSignOut()
+            }}
+            onMouseDown={(e) => {
+              // Prevent the click outside handler from closing the dropdown
+              e.stopPropagation()
+            }}
+            className={`w-full justify-start px-3 py-2 rounded ${theme.light.foreground} hover:bg-gray-100 flex items-center gap-2 transition-colors cursor-pointer`}
           >
             <LogOut className="h-4 w-4" />
-            <span>Cerrar Sesión </span>
+            <span>Cerrar Sesión</span>
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { colors, colorCombos, theme } from "@/lib/colors"
 import { validateEmail } from "@/lib/email-validation"
+import { getSiteUrl } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -73,10 +74,17 @@ export default function SignUpPage() {
     const supabase = createClient()
 
     try {
-      // Get the current origin for the redirect URL
-      const redirectTo = typeof window !== 'undefined' 
-        ? `${window.location.origin}/auth/callback?type=signup`
-        : '/auth/callback?type=signup'
+      // Get the site URL
+      // - In production: Uses NEXT_PUBLIC_SITE_URL if set, otherwise window.location.origin
+      // - In development: Uses NEXT_PUBLIC_SITE_URL if set (for mobile testing), otherwise window.location.origin
+      const siteUrl = getSiteUrl()
+      const redirectTo = `${siteUrl}/auth/callback?type=signup`
+      
+      // Debug: Log the redirect URL
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Email redirect URL:', redirectTo)
+        console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL || 'not set')
+      }
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: finalEmail,

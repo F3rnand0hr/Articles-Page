@@ -168,7 +168,7 @@ export default function HomePage() {
                   <span className={`block ${colors.primary.text[700]}`}>Perspectiva</span>
                 </h1>
                 <p className={`text-xl ${colorCombos.secondaryText} leading-relaxed text-pretty`}>
-                  Un blog jurídico donde encontrarás opiniones sobre las noticias nacionales más relevantes desde un punto de vista legal y crítico, para entender mejor su impacto y fomentar una ciudadanía más consciente e informada.
+                  Una revista jurídica digital donde encontrarás artículos sobre las noticias nacionales más relevantes desde un punto de vista legal y crítico, para entender mejor su impacto y fomentar una ciudadanía más consciente e informada.
                 </p>
               </div>
 
@@ -334,7 +334,7 @@ export default function HomePage() {
               <Link href="/articulos">
                 <Button
                   variant="outline"
-                  className={`${colorCombos.secondaryButton} border ${theme.light.border} hover:bg-[#e6f0f5] transition-colors`}
+                  className={`${colors.primary.text[600]} border ${theme.light.border} hover:bg-[#e6f0f5] transition-colors`}
                 >
                   Ver todos los artículos
                 </Button>

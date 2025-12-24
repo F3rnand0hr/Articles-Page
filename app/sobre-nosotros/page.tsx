@@ -61,7 +61,7 @@ export default function SobreNosotrosPage() {
                 <div className="text-center mb-16">
                     <h1 className={`text-4xl font-bold ${theme.light.foreground} mb-6`}>¿Quiénes Somos?</h1>
                     <p className={`text-xl ${colorCombos.secondaryText} max-w-3xl mx-auto leading-relaxed`}>
-                        Derecho en Perspectiva es un blog jurídico en el que encontrarás opiniones respecto a las noticias nacionales más relevantes desde un punto de vista legal y crítico a efecto de entender mejor su impacto y fomentar una ciudadanía más consciente e informada.
+                        Derecho en Perspectiva es una revista jurídica digital en donde encontrarás artículos respecto a las noticias nacionales más relevantes desde un punto de vista legal y crítico a efecto de entender mejor su impacto y fomentar una ciudadanía más consciente e informada.
                     </p>
                 </div>
 
