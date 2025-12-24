@@ -13,6 +13,7 @@ import { colors, colorCombos, theme } from "@/lib/colors"
 import { hasUserLikedArticle } from "@/app/actions/article-actions"
 import { AuthorSection } from "@/components/author-section"
 import ReactMarkdown from "react-markdown"
+import type { Metadata } from "next"
 
 type Profile = {
   id: string
@@ -49,6 +50,59 @@ type Comment = {
 
 interface ArticlePageProps {
   params: { id: string }
+}
+
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const { id } = params
+  const supabase = await createClient()
+
+  const { data: article } = await supabase
+    .from('articles')
+    .select('title, excerpt, category')
+    .eq('id', id)
+    .eq('published', true)
+    .single()
+
+  if (!article) {
+    return {
+      title: "Artículo no encontrado",
+    }
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://articles-page-five.vercel.app'
+  const articleUrl = `${siteUrl}/articulos/${id}`
+  const imageUrl = `${siteUrl}/icon.png`
+  const description = article.excerpt || `Lee este artículo sobre ${article.category} en Derecho en Perspectiva`
+
+  return {
+    title: `${article.title} | Derecho en Perspectiva`,
+    description: description,
+    openGraph: {
+      title: article.title,
+      description: description,
+      url: articleUrl,
+      siteName: 'Derecho en Perspectiva',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: 'Derecho en Perspectiva',
+        },
+      ],
+      locale: 'es_ES',
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: description,
+      images: [imageUrl],
+    },
+    alternates: {
+      canonical: articleUrl,
+    },
+  }
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {

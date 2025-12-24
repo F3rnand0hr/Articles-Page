@@ -21,6 +21,8 @@ const lora = Lora({
   display: "swap",
 })
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://articles-page-five.vercel.app'
+
 export const metadata: Metadata = {
   title: "Derecho en Perspectiva - Plataforma Legal",
   description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
@@ -35,6 +37,28 @@ export const metadata: Metadata = {
       { url: "/icon.png", type: "image/png" },
     ],
     shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    url: siteUrl,
+    siteName: "Derecho en Perspectiva",
+    title: "Derecho en Perspectiva - Plataforma Legal",
+    description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
+    images: [
+      {
+        url: `${siteUrl}/icon.png`,
+        width: 1200,
+        height: 630,
+        alt: "Derecho en Perspectiva",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Derecho en Perspectiva - Plataforma Legal",
+    description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
+    images: [`${siteUrl}/icon.png`],
   },
 }
 
