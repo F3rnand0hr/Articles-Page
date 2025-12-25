@@ -24,17 +24,16 @@ const lora = Lora({
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://articles-page-five.vercel.app'
 
 export const metadata: Metadata = {
-  title: "Derecho en Perspectiva - Plataforma Legal",
+  title: "Derecho en Perspectiva",
   description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
   generator: "v0.app",
   icons: {
     icon: [
-      { url: "/icon.png", type: "image/png" },
       { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
       { url: "/icon.jpg", type: "image/jpeg" },
     ],
     apple: [
-      { url: "/icon.png", type: "image/png" },
+      { url: "/icon.jpg", type: "image/jpeg" },
     ],
     shortcut: "/favicon.ico",
   },
@@ -43,7 +42,7 @@ export const metadata: Metadata = {
     locale: "es_ES",
     url: siteUrl,
     siteName: "Derecho en Perspectiva",
-    title: "Derecho en Perspectiva - Plataforma Legal",
+    title: "Derecho en Perspectiva",
     description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
     images: [
       {
@@ -56,7 +55,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Derecho en Perspectiva - Plataforma Legal",
+    title: "Derecho en Perspectiva",
     description: "Plataforma de contenido legal con artículos, discusiones y análisis jurídico",
     images: [`${siteUrl}/icon.png`],
   },
