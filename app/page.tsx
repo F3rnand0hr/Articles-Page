@@ -5,7 +5,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Scale, BookOpen, Users, MessageCircle, LogOut, X, Calendar, User } from "lucide-react"
+import { Scale, BookOpen, Users, MessageCircle, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
@@ -61,7 +61,6 @@ type ArticleResponse = {
 export default function HomePage() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const [imageModalOpen, setImageModalOpen] = useState(false)
   const [articles, setArticles] = useState<ArticleResponse[]>([])
   const [articlesLoading, setArticlesLoading] = useState(true)
   const supabase = createClient()
@@ -180,22 +179,6 @@ export default function HomePage() {
 
             </div>
 
-            {/* Right Image */}
-            <div className="relative">
-              <div 
-                className={`aspect-[4/3] lg:aspect-square rounded-2xl overflow-hidden ${colors.white[100]} ${theme.light.border} border cursor-pointer hover:opacity-90 transition-opacity`}
-                onClick={() => setImageModalOpen(true)}
-              >
-                <img
-                  src="/classical-justice-statue-with-scales-in-dramatic-l.png"
-                  alt="Estatua de la Justicia"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#8a2d32]/20 rounded-full blur-xl"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#00699b]/10 rounded-full blur-xl"></div>
-            </div>
           </div>
         </div>
 
@@ -441,31 +424,6 @@ export default function HomePage() {
 
       </main>
 
-      {/* Image Modal */}
-      {imageModalOpen && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setImageModalOpen(false)}
-        >
-          <button
-            onClick={() => setImageModalOpen(false)}
-            className="absolute top-4 right-4 z-50 rounded-full bg-white/90 hover:bg-white text-gray-900 shadow-lg p-2"
-            aria-label="Close image"
-          >
-            <X className="h-6 w-6" />
-          </button>
-          <div 
-            className="relative max-w-5xl max-h-[90vh] w-full h-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src="/classical-justice-statue-with-scales-in-dramatic-l.png"
-              alt="Estatua de la Justicia"
-              className="w-full h-full object-contain rounded-lg"
-            />
-          </div>
-        </div>
-      )}
 
       {/* Mobile bottom nav for narrow screens */}
       <div className="md:hidden border-t border-gray-200 bg-white/90 backdrop-blur-sm">
