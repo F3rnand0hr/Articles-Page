@@ -75,7 +75,7 @@ export function AnimatedArticlesGrid({ articles }: { articles: any[] }) {
                                                     {profile.avatar_url ? (
                                                         <img
                                                             src={profile.avatar_url}
-                                                            alt={profile.display_name || 'Escritor Invitado'}
+                                                            alt={profile.display_name || 'Autor'}
                                                             className="h-10 w-10 rounded-full border-2 border-white shadow-sm object-cover"
                                                         />
                                                     ) : (
