@@ -21,7 +21,7 @@ const lora = Lora({
   display: "swap",
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://articles-page-five.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://derechoenperspectiva.xyz'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
