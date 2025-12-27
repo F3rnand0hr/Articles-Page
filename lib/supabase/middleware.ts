@@ -37,14 +37,23 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/articulos") &&
-    !request.nextUrl.pathname.startsWith("/sobre-nosotros")
-  ) {
+  // Allow public access to SEO and public routes
+  const publicPaths = [
+    "/",
+    "/sitemap.xml",
+    "/robots.txt",
+    "/login",
+    "/auth",
+    "/articulos",
+    "/sobre-nosotros",
+  ]
+
+  const isPublicPath = publicPaths.some(path => 
+    request.nextUrl.pathname === path || 
+    request.nextUrl.pathname.startsWith(path)
+  )
+
+  if (!isPublicPath && !user) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = "/auth/login"
