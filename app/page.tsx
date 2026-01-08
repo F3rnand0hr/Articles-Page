@@ -5,7 +5,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Scale, BookOpen, Users, MessageCircle, LogOut, User } from "lucide-react"
+import { Scale, BookOpen, Users, MessageCircle, LogOut, User, Heart } from "lucide-react"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
@@ -115,7 +115,35 @@ export default function HomePage() {
         if (error) {
           console.error("Error fetching articles:", error)
         } else {
-          setArticles((data || []) as unknown as ArticleResponse[])
+          const articlesData = (data || []) as unknown as ArticleResponse[]
+          
+          // Get actual like counts from article_likes table
+          if (articlesData.length > 0) {
+            const articleIds = articlesData.map(article => article.id)
+            
+            // Fetch all likes for these articles
+            const { data: likesData, error: likesError } = await supabase
+              .from('article_likes')
+              .select('article_id')
+              .in('article_id', articleIds)
+
+            if (!likesError && likesData) {
+              // Count likes per article
+              const likesCountMap = new Map<string, number>()
+              articleIds.forEach(id => likesCountMap.set(id, 0))
+              likesData.forEach(like => {
+                const currentCount = likesCountMap.get(like.article_id) || 0
+                likesCountMap.set(like.article_id, currentCount + 1)
+              })
+
+              // Update articles with actual like counts
+              articlesData.forEach(article => {
+                article.likes_count = likesCountMap.get(article.id) || 0
+              })
+            }
+          }
+          
+          setArticles(articlesData)
         }
       } catch (error) {
         console.error("Error fetching articles:", error)
@@ -252,6 +280,12 @@ export default function HomePage() {
                                     extraCount={sortedAuthors.length > 1 ? sortedAuthors.length - 1 : 0}
                                     authors={sortedAuthors}
                                   />
+                                </div>
+                                <div className="flex items-center">
+                                  <span className={`flex items-center ${colorCombos.secondaryText}`}>
+                                    <Heart className={`h-4 w-4 mr-1 ${colorCombos.icon.red}`} />
+                                    {featuredArticles[0].likes_count}
+                                  </span>
                                 </div>
                               </div>
                             )

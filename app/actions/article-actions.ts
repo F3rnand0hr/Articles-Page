@@ -54,9 +54,7 @@ export async function toggleArticleLike(articleId: string, userId: string) {
         // Like the article
         const { error: insertError } = await supabase
             .from('article_likes')
-            .insert([
-                { article_id: articleId, user_id: userId }
-            ])
+            .insert([{ article_id: articleId, user_id: userId }])
 
         if (insertError) {
             console.error('Error liking article:', insertError)
@@ -128,4 +126,42 @@ export async function getArticleLikesCount(articleId: string) {
     }
 
     return { count: count || 0 }
+}
+
+/**
+ * Gets like counts for multiple articles from the article_likes table
+ * @param articleIds Array of article IDs
+ * @returns Map of article ID to like count
+ */
+export async function getArticleLikesCounts(articleIds: string[]): Promise<Map<string, number>> {
+    const supabase = await createClient()
+    const countsMap = new Map<string, number>()
+
+    if (articleIds.length === 0) {
+        return countsMap
+    }
+
+    // Fetch all likes for the given article IDs
+    const { data, error } = await supabase
+        .from('article_likes')
+        .select('article_id')
+        .in('article_id', articleIds)
+
+    if (error) {
+        console.error('Error getting article likes counts:', error)
+        // Return map with zeros for all articles
+        articleIds.forEach(id => countsMap.set(id, 0))
+        return countsMap
+    }
+
+    // Initialize all counts to 0
+    articleIds.forEach(id => countsMap.set(id, 0))
+
+    // Count likes per article
+    data?.forEach(like => {
+        const currentCount = countsMap.get(like.article_id) || 0
+        countsMap.set(like.article_id, currentCount + 1)
+    })
+
+    return countsMap
 }

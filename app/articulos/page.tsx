@@ -10,6 +10,7 @@ import { ShareButton } from "@/components/share-button"
 import Link from "next/link"
 import { UserNav } from "@/components/user-nav"
 import { colors, colorCombos, theme } from "@/lib/colors"
+import { getArticleLikesCounts } from "@/app/actions/article-actions"
 
 interface Profile {
   id: string
@@ -83,8 +84,18 @@ export default async function ArticulosPage() {
     console.error("Error fetching articles:", error)
   }
 
-  const featuredArticles = (articles || []).filter((article) => article.featured)
-  const regularArticles = (articles || []).filter((article) => !article.featured)
+  // Get actual like counts from article_likes table
+  const articleIds = (articles || []).map(article => article.id)
+  const likesCountsMap = await getArticleLikesCounts(articleIds)
+
+  // Update articles with actual like counts
+  const articlesWithLikes = (articles || []).map(article => ({
+    ...article,
+    likes_count: likesCountsMap.get(article.id) || 0
+  }))
+
+  const featuredArticles = articlesWithLikes.filter((article) => article.featured)
+  const regularArticles = articlesWithLikes.filter((article) => !article.featured)
 
   return (
     <div className={`min-h-screen ${theme.light.background}`}>
@@ -184,19 +195,27 @@ export default async function ArticulosPage() {
                   )
                 })()}
               </div>
-              <div className="flex items-center gap-2">
-                <Link href={`/articulos/${featuredArticles[0].id}`}>
-                  <Button className={colorCombos.primaryButton}>
-                    Leer más
-                  </Button>
-                </Link>
-                <ShareButton
-                  articleId={featuredArticles[0].id}
-                  articleTitle={featuredArticles[0].title}
-                  variant="outline"
-                  size="default"
-                  iconOnly={true}
-                />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className={`flex items-center ${colorCombos.secondaryText}`}>
+                    <Heart className={`h-4 w-4 mr-1 ${colorCombos.icon.red}`} />
+                    {featuredArticles[0].likes_count}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link href={`/articulos/${featuredArticles[0].id}`}>
+                    <Button className={colorCombos.primaryButton}>
+                      Leer más
+                    </Button>
+                  </Link>
+                  <ShareButton
+                    articleId={featuredArticles[0].id}
+                    articleTitle={featuredArticles[0].title}
+                    variant="outline"
+                    size="default"
+                    iconOnly={true}
+                  />
+                </div>
               </div>
             </div>
           </div>
