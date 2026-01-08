@@ -210,7 +210,7 @@ export default function HomePage() {
                         <div className="p-6">
                           <div className="flex items-center gap-3 mb-4 flex-wrap">
                             <Badge variant="secondary" className="bg-[#f9d9d9] text-[#6a2124] border-[#f3b3b3] border capitalize">
-                              Vol. 1
+                              {featuredArticles[0].category}
                             </Badge>
                             <Badge variant="outline" className="bg-[#ffefc1] text-[#b8941f] border-[#ffefc1] border">
                               Destacado
@@ -274,7 +274,7 @@ export default function HomePage() {
                         <div className="p-6 h-full flex flex-col">
                           <div className="flex items-center gap-2 mb-3">
                             <Badge variant="secondary" className="text-xs bg-[#f9d9d9] text-[#6a2124] border-[#f3b3b3] border capitalize">
-                              Vol. 1
+                              {article.category}
                             </Badge>
                             {article.featured && (
                               <Badge variant="outline" className="text-xs bg-[#ffefc1] text-[#b8941f] border-[#ffefc1] border">
